@@ -52,24 +52,8 @@
         }
 
         @keyframes pulsate {
-            100% {
-                text-shadow: 
-                0 0 4px #fff,
-                0 0 11px #fff,
-                0 0 19px var(--accent-magenta),
-                0 0 40px var(--accent-magenta),
-                0 0 80px var(--accent-magenta),
-                0 0 100px var(--accent-magenta);
-            }
-            0% {
-                text-shadow: 
-                0 0 2px #fff,
-                0 0 4px #fff,
-                0 0 6px var(--accent-magenta),
-                0 0 10px var(--accent-magenta),
-                0 0 45px var(--accent-magenta),
-                0 0 55px var(--accent-magenta);
-            }
+            100% { text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 19px var(--accent-magenta), 0 0 40px var(--accent-magenta), 0 0 80px var(--accent-magenta), 0 0 100px var(--accent-magenta); }
+            0% { text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px var(--accent-magenta), 0 0 10px var(--accent-magenta), 0 0 45px var(--accent-magenta), 0 0 55px var(--accent-magenta); }
         }
 
         #game-container {
@@ -80,6 +64,7 @@
             align-items: center;
             padding: 0 10px;
             box-sizing: border-box;
+            position: relative;
         }
 
         .canvas-wrapper {
@@ -91,6 +76,18 @@
             box-shadow: 0 0 30px rgba(6, 182, 212, 0.15), inset 0 0 50px rgba(0, 0, 0, 0.8);
             position: relative;
             overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Pulsating neon glow for wins */
+        @keyframes winGlow {
+            0% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.15), inset 0 0 50px rgba(0, 0, 0, 0.8); border-color: var(--border-color); }
+            50% { box-shadow: 0 0 60px var(--accent-gold), inset 0 0 60px rgba(251, 191, 36, 0.4), 0 0 120px var(--accent-gold); border-color: var(--accent-gold); }
+            100% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.15), inset 0 0 50px rgba(0, 0, 0, 0.8); border-color: var(--border-color); }
+        }
+
+        .canvas-wrapper.win-glow {
+            animation: winGlow 1.2s infinite alternate;
         }
 
         #slotCanvas {
@@ -164,6 +161,13 @@
         .bet-btn:hover { background: #334155; }
         .bet-btn:active { transform: scale(0.9); }
 
+        #spin-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
         #spinBtn {
             background: linear-gradient(180deg, var(--accent-green), #166534);
             border: 2px solid #4ade80;
@@ -180,23 +184,34 @@
             transition: all 0.1s;
         }
 
-        #spinBtn:hover {
-            box-shadow: 0 0 40px rgba(34, 197, 94, 0.8);
-            transform: translateY(-2px);
+        #spinBtn:hover { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8); transform: translateY(-2px); }
+        #spinBtn:active { transform: translateY(2px) scale(0.95); box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
+        #spinBtn:disabled { background: #1e293b; border-color: #334155; color: #64748b; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        #autoSpinBtn {
+            background: transparent;
+            border: 2px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        #spinBtn:active {
-            transform: translateY(2px) scale(0.95);
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        #autoSpinBtn:hover {
+            background: rgba(6, 182, 212, 0.1);
         }
 
-        #spinBtn:disabled {
-            background: #1e293b;
-            border-color: #334155;
-            color: #64748b;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
+        #autoSpinBtn.active {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--accent-cyan);
+            border-color: var(--accent-cyan);
         }
 
         /* Bonus Modal Overlay */
@@ -209,14 +224,14 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
         }
 
         .modal-title {
             font-size: 3rem;
             color: var(--accent-gold);
             text-shadow: 0 0 20px var(--accent-gold);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             animation: pulsateGold 1s infinite alternate;
         }
 
@@ -230,6 +245,7 @@
             width: 90vw;
             max-width: 600px;
             aspect-ratio: 1;
+            margin-bottom: 30px;
         }
 
         #wheelCanvas {
@@ -252,12 +268,52 @@
             filter: drop-shadow(0 0 15px #ef4444);
         }
 
+        .modal-controls {
+            display: flex;
+            gap: 20px;
+        }
+
+        .modal-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+
+        #wheelSpinBtn {
+            background: linear-gradient(180deg, var(--accent-magenta), #9d009d);
+            border: 2px solid #ff66ff;
+            color: white;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+        }
+
+        #wheelSpinBtn:hover { box-shadow: 0 0 50px rgba(255, 0, 255, 0.9); transform: scale(1.05); }
+        #wheelSpinBtn:active { transform: scale(0.95); }
+
+        #wheelCollectBtn {
+            display: none;
+            background: linear-gradient(180deg, var(--accent-gold), #b45309);
+            border: 2px solid #fde047;
+            color: #000;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
+        }
+
+        #wheelCollectBtn:hover { box-shadow: 0 0 50px rgba(251, 191, 36, 0.9); transform: scale(1.05); }
+        #wheelCollectBtn:active { transform: scale(0.95); }
+
         @media (max-width: 768px) {
             .title { font-size: 2rem; }
             #controls { flex-direction: column; gap: 20px; padding: 15px; }
+            #spin-group { width: 100%; }
             #spinBtn { width: 100%; font-size: 1.5rem; }
             .stat-box { width: 100%; flex-direction: row; justify-content: space-between; }
             .stat-label { margin-bottom: 0; }
+            .modal-title { font-size: 2rem; }
         }
     </style>
 </head>
@@ -268,8 +324,7 @@
     </div>
 
     <div id="game-container">
-        <div class="canvas-wrapper">
-            <!-- Native canvas size is locked to 1000x600 for coordinate math. CSS scales it. -->
+        <div class="canvas-wrapper" id="canvasWrapper">
             <canvas id="slotCanvas" width="1000" height="600"></canvas>
         </div>
 
@@ -279,7 +334,10 @@
                 <div class="stat-value" id="balanceDisplay">$10,000</div>
             </div>
 
-            <button id="spinBtn">SPIN</button>
+            <div id="spin-group">
+                <button id="spinBtn">SPIN</button>
+                <button id="autoSpinBtn">AUTO SPIN: OFF</button>
+            </div>
 
             <div class="stat-box">
                 <div class="stat-label">TOTAL BET</div>
@@ -293,10 +351,14 @@
     </div>
 
     <div id="bonus-modal">
-        <div class="modal-title">BONUS WHEEL</div>
+        <div class="modal-title">BONUS TRIGGERED!</div>
         <div class="wheel-container">
             <div class="pointer"></div>
             <canvas id="wheelCanvas" width="800" height="800"></canvas>
+        </div>
+        <div class="modal-controls">
+            <button id="wheelSpinBtn" class="modal-btn">SPIN WHEEL</button>
+            <button id="wheelCollectBtn" class="modal-btn">COLLECT</button>
         </div>
     </div>
 
@@ -333,7 +395,8 @@
             [SYMBOLS.WILD]:    [50,  250, 1000]
         };
 
-        const WHEEL_SEGMENTS = [2, 10, 5, 25, 2, 10, 5, 50, 2, 10, 5, 100];
+        // Realistic Segment Multipliers
+        const WHEEL_SEGMENTS = [5, 10, 5, 25, 5, 10, 5, 50, 5, 10, 25, 100];
         const NUM_SEGMENTS = WHEEL_SEGMENTS.length;
         const ARC = Math.PI * 2 / NUM_SEGMENTS;
 
@@ -344,19 +407,26 @@
         let winningLines = [];
         let totalWin = 0;
         let bonusCount = 0;
+        let isAutoSpin = false;
 
         // --- DOM Elements ---
         const canvas = document.getElementById('slotCanvas');
         const ctx = canvas.getContext('2d');
+        const canvasWrapper = document.getElementById('canvasWrapper');
+        
         const wheelCanvas = document.getElementById('wheelCanvas');
         const wCtx = wheelCanvas.getContext('2d');
         
         const spinBtn = document.getElementById('spinBtn');
+        const autoSpinBtn = document.getElementById('autoSpinBtn');
         const betMinus = document.getElementById('betMinus');
         const betPlus = document.getElementById('betPlus');
         const balanceDisplay = document.getElementById('balanceDisplay');
         const betDisplay = document.getElementById('betDisplay');
+        
         const bonusModal = document.getElementById('bonus-modal');
+        const wheelSpinBtn = document.getElementById('wheelSpinBtn');
+        const wheelCollectBtn = document.getElementById('wheelCollectBtn');
 
         // --- Web Audio Context ---
         let audioCtx;
@@ -392,10 +462,19 @@
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(800, t);
                 osc.frequency.exponentialRampToValueAtTime(200, t + 0.05);
-                gain.gain.setValueAtTime(0.5, t);
+                gain.gain.setValueAtTime(0.6, t);
                 gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
                 osc.start(t);
                 osc.stop(t + 0.05);
+            } else if (type === 'snap') {
+                // Heavy mechanical thud when wheel locks
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(100, t);
+                osc.frequency.exponentialRampToValueAtTime(10, t + 0.15);
+                gain.gain.setValueAtTime(1, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+                osc.start(t);
+                osc.stop(t + 0.15);
             } else if (type === 'win') {
                 const notes = [261.63, 329.63, 392.00, 523.25, 659.25]; // C4, E4, G4, C5, E5
                 notes.forEach((freq, i) => {
@@ -591,11 +670,16 @@
         // --- Game Loop ---
         function spinLogic() {
             if (balance < currentBet) {
-                alert("Insufficient Balance! Refresh to reload.");
+                isAutoSpin = false;
+                autoSpinBtn.innerText = 'AUTO SPIN: OFF';
+                autoSpinBtn.classList.remove('active');
+                alert("Insufficient Balance! Adjust bet to continue.");
                 return;
             }
             
             initAudio();
+            canvasWrapper.classList.remove('win-glow'); // Remove previous win glow
+
             balance -= currentBet;
             updateUI();
 
@@ -661,14 +745,20 @@
             if (totalWin > 0) {
                 balance += totalWin;
                 playSound('win');
+                canvasWrapper.classList.add('win-glow'); // Trigger canvas border glow
             }
             updateUI();
 
             if (bonusCount >= 3) {
                 gameState = 'BONUS';
-                setTimeout(triggerBonusWheel, 1000);
+                setTimeout(showBonusModal, 1000);
             } else {
                 gameState = 'IDLE';
+                if (isAutoSpin) {
+                    setTimeout(() => {
+                        if (gameState === 'IDLE' && isAutoSpin) spinLogic();
+                    }, 1200);
+                }
             }
         }
 
@@ -760,12 +850,22 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // --- Bonus Wheel Modal ---
+        // --- Bonus Wheel Modal Interactive Logic ---
         let wheelAngle = 0;
         let wheelVel = 0;
-        let wheelActive = false;
+        let wheelState = 'WAITING'; // WAITING, SPINNING, STOPPED
         let lastSegment = 0;
         let wheelWinAmt = 0;
+
+        function showBonusModal() {
+            bonusModal.style.display = 'flex';
+            wheelSpinBtn.style.display = 'block';
+            wheelCollectBtn.style.display = 'none';
+            wheelAngle = 0;
+            wheelWinAmt = 0;
+            wheelState = 'WAITING';
+            drawBonusWheel();
+        }
 
         function drawBonusWheel() {
             wCtx.clearRect(0, 0, 800, 800);
@@ -777,7 +877,7 @@
                 wCtx.beginPath();
                 wCtx.moveTo(0,0);
                 wCtx.arc(0, 0, 380, i*ARC, (i+1)*ARC);
-                wCtx.fillStyle = i % 2 === 0 ? '#1e293b' : '#334155'; // Alternate dark slate
+                wCtx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a'; // Alternate dark slate
                 wCtx.fill();
                 
                 wCtx.strokeStyle = '#fbbf24'; // Gold separator
@@ -786,30 +886,36 @@
 
                 wCtx.save();
                 wCtx.rotate(i*ARC + ARC/2);
-                wCtx.translate(320, 0); 
+                wCtx.translate(300, 0); 
                 wCtx.rotate(Math.PI/2); // Make text upright when at the top (-90 deg)
                 wCtx.textAlign = 'center';
                 wCtx.textBaseline = 'middle';
-                wCtx.fillStyle = WHEEL_SEGMENTS[i] >= 50 ? '#ff00ff' : '#06b6d4'; // Highlight big wins
-                wCtx.shadowBlur = 10;
+                
+                // Color coordination based on multiplier size
+                let mult = WHEEL_SEGMENTS[i];
+                if (mult >= 50) wCtx.fillStyle = '#ff00ff';
+                else if (mult >= 25) wCtx.fillStyle = '#22c55e';
+                else wCtx.fillStyle = '#06b6d4';
+                
+                wCtx.shadowBlur = 15;
                 wCtx.shadowColor = wCtx.fillStyle;
-                wCtx.font = '900 40px Orbitron';
-                wCtx.fillText('x' + WHEEL_SEGMENTS[i], 0, 0);
+                wCtx.font = '900 45px Orbitron';
+                wCtx.fillText(mult + 'x', 0, 0);
                 wCtx.restore();
             }
             wCtx.restore();
 
             // Center hub
             wCtx.beginPath();
-            wCtx.arc(400, 400, 40, 0, Math.PI*2);
+            wCtx.arc(400, 400, 50, 0, Math.PI*2);
             wCtx.fillStyle = '#fbbf24';
             wCtx.fill();
             wCtx.strokeStyle = '#000';
-            wCtx.lineWidth = 8;
+            wCtx.lineWidth = 10;
             wCtx.stroke();
 
             // Draw internal Win Text if stopped
-            if (!wheelActive && wheelWinAmt > 0) {
+            if (wheelState === 'STOPPED' && wheelWinAmt > 0) {
                 wCtx.fillStyle = 'rgba(0,0,0,0.85)';
                 wCtx.fillRect(0,0,800,800);
                 
@@ -824,9 +930,9 @@
         }
 
         function updateWheelLoop() {
-            if (wheelActive) {
+            if (wheelState === 'SPINNING') {
                 wheelAngle += wheelVel;
-                wheelVel *= 0.993; // Friction Curve
+                wheelVel *= 0.992; // Friction Curve
 
                 // Calculate current segment (pointer is at Top / -PI/2)
                 let normAngle = wheelAngle % (Math.PI*2);
@@ -841,9 +947,17 @@
                     lastSegment = currentSeg;
                 }
 
-                if (wheelVel < 0.001) {
-                    // Wheel Stopped
-                    wheelActive = false;
+                // Precision Snap when slow enough
+                if (wheelVel < 0.002) {
+                    wheelVel = 0;
+                    
+                    // Calculate exact offset needed to perfectly center the segment at the pointer
+                    let delta = ((currentSeg + 0.5) * ARC) - offsetAngle;
+                    wheelAngle -= delta; // Lock into place
+                    
+                    wheelState = 'STOPPED';
+                    playSound('snap'); // Heavy locking sound
+                    
                     let winMult = WHEEL_SEGMENTS[currentSeg];
                     wheelWinAmt = currentBet * winMult;
                     balance += wheelWinAmt;
@@ -851,32 +965,33 @@
                     playSound('wheelEnd');
                     
                     setTimeout(() => {
-                        bonusModal.style.display = 'none';
-                        wheelWinAmt = 0;
-                        gameState = 'IDLE';
-                    }, 4000); // Wait 4 seconds to show win amount
+                        wheelCollectBtn.style.display = 'block';
+                        drawBonusWheel(); // Redraw with overlay
+                    }, 1000); 
                 }
             }
             
             drawBonusWheel();
 
-            if (gameState === 'BONUS') {
+            if (gameState === 'BONUS' && wheelState !== 'WAITING') {
                 requestAnimationFrame(updateWheelLoop);
             }
-        }
-
-        function triggerBonusWheel() {
-            bonusModal.style.display = 'flex';
-            wheelAngle = 0;
-            wheelWinAmt = 0;
-            wheelActive = true;
-            wheelVel = Math.random() * 0.15 + 0.35; // Random spin power
-            requestAnimationFrame(updateWheelLoop);
         }
 
         // --- Event Listeners ---
         spinBtn.addEventListener('click', () => {
             if (gameState === 'IDLE') spinLogic();
+        });
+
+        autoSpinBtn.addEventListener('click', () => {
+            initAudio();
+            isAutoSpin = !isAutoSpin;
+            autoSpinBtn.innerText = isAutoSpin ? 'AUTO SPIN: ON' : 'AUTO SPIN: OFF';
+            autoSpinBtn.classList.toggle('active', isAutoSpin);
+            
+            if (isAutoSpin && gameState === 'IDLE') {
+                spinLogic();
+            }
         });
 
         betMinus.addEventListener('click', () => {
@@ -892,6 +1007,31 @@
                 initAudio();
                 currentBet += 10;
                 updateUI();
+            }
+        });
+
+        wheelSpinBtn.addEventListener('click', () => {
+            if (wheelState === 'WAITING') {
+                initAudio();
+                wheelState = 'SPINNING';
+                wheelSpinBtn.style.display = 'none';
+                // Randomized powerful starting velocity
+                wheelVel = Math.random() * 0.15 + 0.4; 
+                requestAnimationFrame(updateWheelLoop);
+            }
+        });
+
+        wheelCollectBtn.addEventListener('click', () => {
+            initAudio();
+            bonusModal.style.display = 'none';
+            wheelWinAmt = 0;
+            gameState = 'IDLE';
+            
+            // Resume Auto-Spin if it was active before the bonus triggered
+            if (isAutoSpin) {
+                setTimeout(() => {
+                    if (gameState === 'IDLE') spinLogic();
+                }, 1000);
             }
         });
 
