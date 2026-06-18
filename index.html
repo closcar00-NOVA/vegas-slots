@@ -76,3 +76,9 @@
     </script>
 </body>
 </html>
+window.addEventListener('storage', (e) => {
+    if (e.key === 'vegas_pro_master_bankroll') {
+        balance = parseInt(e.newValue);
+        updateUI();
+    }
+});
