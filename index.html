@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WHEEL OF SIN - Peak65 Edition</title>
+    <title>WHEEL OF SIN - Peak65 Hybrid Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-color: #020617; --accent-cyan: #06b6d4; --accent-magenta: #ff00ff; --accent-gold: #fbbf24; --accent-green: #22c55e; }
-        body { margin: 0; padding: 20px; background: radial-gradient(circle at 50% 50%, #0f172a 0%, #000000 100%); color: white; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; user-select: none; }
+        :root { --accent-cyan: #06b6d4; --accent-magenta: #ff00ff; --accent-gold: #fbbf24; --accent-green: #22c55e; }
+        
+        /* PHASE 3 ASSET: Environmental Background */
+        body { 
+            margin: 0; padding: 20px; 
+            background: #000 url('env_background.png') no-repeat center center fixed; 
+            background-size: cover;
+            color: white; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; user-select: none; 
+        }
         
         /* The Physical Cabinet Architecture */
         .cabinet-wrapper { position: relative; display: flex; flex-direction: column; width: 100%; max-width: 900px; background: #000; border-radius: 24px 24px 12px 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.05); z-index: 10; margin-top: 20px; }
@@ -27,8 +34,17 @@
         .progressive-amount { font-size: 4.5rem; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 30px rgba(251, 191, 36, 0.6); margin: 0; line-height: 1; }
 
         /* Main Screen Area */
-        .screen-bezel { padding: 15px; background: #0f172a; border-left: 2px solid #334155; border-right: 2px solid #334155; }
-        .canvas-wrapper { width: 100%; aspect-ratio: 5 / 3; background: #020617; border: 4px solid rgba(6, 182, 212, 0.3); border-radius: 12px; box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9); position: relative; overflow: hidden; transition: all 0.3s ease; }
+        .screen-bezel { padding: 15px; background: rgba(15, 23, 42, 0.85); border-left: 2px solid #334155; border-right: 2px solid #334155; backdrop-filter: blur(10px); }
+        
+        /* PHASE 3 ASSET: Reel Backing Texture */
+        .canvas-wrapper { 
+            width: 100%; aspect-ratio: 5 / 3; 
+            background: #020617 url('env_reel_backing.png') repeat center center; 
+            background-size: cover;
+            border: 4px solid rgba(6, 182, 212, 0.3); border-radius: 12px; 
+            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9); position: relative; overflow: hidden; transition: all 0.3s ease; 
+        }
+        
         .canvas-wrapper.win-glow { animation: winGlow 1.2s infinite alternate; }
         @keyframes winGlow { 0% { border-color: rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9); } 100% { border-color: var(--accent-gold); box-shadow: inset 0 0 80px rgba(251, 191, 36, 0.4), 0 0 40px var(--accent-gold); } }
         #slotCanvas { width: 100%; height: 100%; display: block; cursor: pointer; }
@@ -45,8 +61,8 @@
         #spin-group { display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .toggle-group { display: flex; gap: 10px; }
         #spinBtn { background: linear-gradient(180deg, var(--accent-green), #14532d); border: 3px solid #4ade80; color: white; font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; padding: 18px 70px; border-radius: 50px; cursor: pointer; box-shadow: 0 10px 25px rgba(20, 83, 45, 0.8), inset 0 5px 10px rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 3px; transition: all 0.1s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        #spinBtn:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 15px 30px rgba(34, 197, 94, 0.5), inset 0 5px 10px rgba(255,255,255,0.4); }
-        #spinBtn:active { transform: translateY(4px); box-shadow: 0 2px 5px rgba(20, 83, 45, 0.8); }
+        #spinBtn:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 15px 30px rgba(34, 197, 94, 0.5), inset 0 5px 10px rgba(255,255,255,0.4); }
+        #spinBtn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 5px rgba(20, 83, 45, 0.8); }
         #spinBtn:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; transform: none; }
 
         .sys-btn { background: #0f172a; border: 2px solid #334155; color: #94a3b8; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
@@ -66,7 +82,7 @@
         #wheelCollectBtn:hover { filter: brightness(1.2); transform: scale(1.05); } #wheelCollectBtn:active { transform: scale(0.95); }
 
         @media (max-width: 900px) {
-            .led-pillar { display: none; } /* Hide heavy LEDs on mobile/fold inner screens */
+            .led-pillar { display: none; }
             .cabinet-wrapper { margin-top: 0; border-radius: 0; }
             .topper { border-radius: 0; padding: 15px; }
             .progressive-amount { font-size: 3rem; }
@@ -105,7 +121,7 @@
             </div>
 
             <div id="spin-group">
-                <button id="spinBtn">SPIN</button>
+                <button id="spinBtn" disabled>LOADING...</button>
                 <div class="toggle-group">
                     <button id="autoSpinBtn" class="sys-btn">AUTO SPIN: OFF</button>
                     <button id="multBtn" class="sys-btn">MULTIPLIER: 1X</button>
@@ -137,7 +153,6 @@
 
     <script>
         const SYMBOLS = { X: 0, WATCH: 1, VAULT: 2, DIAMOND: 3, WILD: 4, BONUS: 5 };
-        const COLORS = ['#ff00ff', '#e2e8f0', '#fbbf24', '#06b6d4', '#22c55e', '#f97316'];
         const WEIGHTS = [40, 25, 15, 10, 5, 5]; 
 
         const PAYLINES = [
@@ -157,18 +172,7 @@
         const NUM_SEGMENTS = WHEEL_SEGMENTS.length;
         const ARC = Math.PI * 2 / NUM_SEGMENTS;
 
-        // --- Game State & Economy ---
-        let balance = parseInt(localStorage.getItem('vegas_pro_master_bankroll')) || 1000000;
-        let baseBet = 100;
-        let activeMultiplier = 1;
-        let fakeProgressive = 42500.00;
-        let gameState = 'IDLE'; 
-        let winningLines = [];
-        let totalWin = 0;
-        let bonusCount = 0;
-        let isAutoSpin = false;
-
-        // DOM Elements
+        // --- DOM Elements ---
         const canvas = document.getElementById('slotCanvas'); const ctx = canvas.getContext('2d');
         const canvasWrapper = document.getElementById('canvasWrapper');
         const wheelCanvas = document.getElementById('wheelCanvas'); const wCtx = wheelCanvas.getContext('2d');
@@ -179,6 +183,49 @@
         const progDisplay = document.getElementById('progressiveDisplay');
         const bonusModal = document.getElementById('bonus-modal');
         const wheelSpinBtn = document.getElementById('wheelSpinBtn'); const wheelCollectBtn = document.getElementById('wheelCollectBtn');
+
+        // --- PHASE 1 ASSET PRELOADER ---
+        const loadedAssets = {};
+        let assetsToLoad = 6;
+        let assetsLoadedCount = 0;
+
+        const assetMap = {
+            [SYMBOLS.X]: 'symbol_x.png',
+            [SYMBOLS.WATCH]: 'symbol_watch.png',
+            [SYMBOLS.VAULT]: 'symbol_vault.png',
+            [SYMBOLS.DIAMOND]: 'symbol_diamond.png',
+            [SYMBOLS.WILD]: 'symbol_wild.png',
+            [SYMBOLS.BONUS]: 'symbol_bonus.png'
+        };
+
+        function initAssets() {
+            for (let key in assetMap) {
+                const img = new Image();
+                img.onload = () => {
+                    assetsLoadedCount++;
+                    if (assetsLoadedCount === assetsToLoad) {
+                        spinBtn.innerText = "SPIN";
+                        spinBtn.disabled = false;
+                        drawSlotCanvas(); // Render initial frame once images are ready
+                    }
+                };
+                img.onerror = () => console.error("Failed to load: " + assetMap[key]);
+                img.src = assetMap[key];
+                loadedAssets[key] = img;
+            }
+        }
+        initAssets();
+
+        // --- Game State & Economy ---
+        let balance = parseInt(localStorage.getItem('vegas_pro_master_bankroll')) || 1000000;
+        let baseBet = 100;
+        let activeMultiplier = 1;
+        let fakeProgressive = 42500.00;
+        let gameState = 'IDLE'; 
+        let winningLines = [];
+        let totalWin = 0;
+        let bonusCount = 0;
+        let isAutoSpin = false;
 
         // Master Ledger Live Sync
         window.addEventListener('storage', (event) => {
@@ -221,40 +268,19 @@
         function formatMoney(num) { return '$' + Math.floor(num).toLocaleString(); }
         function getRandomSymbol() { let r = Math.random() * 100; for (let i = 0; i < WEIGHTS.length; i++) { if (r < WEIGHTS[i]) return i; r -= WEIGHTS[i]; } return 0; }
 
-        // --- Vector Rendering Engine ---
-        function drawBaseShape(ctx, sym, size) {
-            ctx.beginPath();
-            switch(sym) {
-                case SYMBOLS.X:
-                    ctx.moveTo(-size/3, -size/3); ctx.lineTo(size/3, size/3);
-                    ctx.moveTo(size/3, -size/3); ctx.lineTo(-size/3, size/3); break;
-                case SYMBOLS.WATCH:
-                    ctx.arc(0, 0, size/3.5, 0, Math.PI*2); ctx.moveTo(-size/6, -size/3.5); ctx.lineTo(-size/6, -size/2); ctx.moveTo(size/6, -size/3.5); ctx.lineTo(size/6, -size/2); ctx.moveTo(-size/6, size/3.5); ctx.lineTo(-size/6, size/2); ctx.moveTo(size/6, size/3.5); ctx.lineTo(size/6, size/2); ctx.moveTo(0, 0); ctx.lineTo(size/8, -size/8); break;
-                case SYMBOLS.VAULT:
-                    ctx.rect(-size/2.5, -size/2.5, size/1.25, size/1.25); ctx.moveTo(0, -size/6); ctx.arc(0, 0, size/6, -Math.PI/2, Math.PI*1.5); ctx.moveTo(-size/4, 0); ctx.lineTo(-size/6, 0); ctx.moveTo(size/4, 0); ctx.lineTo(size/6, 0); break;
-                case SYMBOLS.DIAMOND:
-                    ctx.moveTo(0, -size/2); ctx.lineTo(size/2.5, -size/8); ctx.lineTo(0, size/2.2); ctx.lineTo(-size/2.5, -size/8); ctx.closePath(); ctx.moveTo(-size/2.5, -size/8); ctx.lineTo(size/2.5, -size/8); ctx.moveTo(0, -size/2); ctx.lineTo(0, -size/8); break;
-                case SYMBOLS.BONUS:
-                    for(let i=0; i<5; i++) { let angle = i * Math.PI * 2 / 5 - Math.PI/2; let pX = Math.cos(angle) * size/2; let pY = Math.sin(angle) * size/2; if(i===0) ctx.moveTo(pX, pY); else ctx.lineTo(pX, pY); angle += Math.PI * 2 / 10; pX = Math.cos(angle) * size/4; pY = Math.sin(angle) * size/4; ctx.lineTo(pX, pY); } ctx.closePath(); break;
-            }
-        }
-
+        // --- NEW Image-Based Rendering Engine ---
         function drawSymbol(ctx, sym, x, y, size, isSpinning) {
-            ctx.save(); ctx.translate(x, y); const color = COLORS[sym];
-            if (sym === SYMBOLS.WILD) {
-                if (!isSpinning) { ctx.shadowColor = '#000'; ctx.shadowBlur = 10; ctx.shadowOffsetX = 6; ctx.shadowOffsetY = 6; }
-                ctx.beginPath(); ctx.moveTo(-size/2.2, size/3); ctx.lineTo(size/2.2, size/3); ctx.lineTo(size/2, -size/4); ctx.lineTo(size/4, 0); ctx.lineTo(0, -size/2); ctx.lineTo(-size/4, 0); ctx.lineTo(-size/2, -size/4); ctx.closePath();
-                ctx.fillStyle = color; ctx.fill();
-                if (!isSpinning) { ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke(); }
-                ctx.fillStyle = '#000'; ctx.font = `900 ${size/4.5}px Orbitron`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText("WILD", 0, size/8);
-            } else {
-                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-                if (isSpinning) { ctx.strokeStyle = color; ctx.globalAlpha = 0.6; ctx.lineWidth = 6; ctx.scale(1, 1.2); drawBaseShape(ctx, sym, size); ctx.stroke(); } 
-                else {
-                    ctx.strokeStyle = '#000000'; ctx.lineWidth = 10; ctx.translate(6, 6); drawBaseShape(ctx, sym, size); ctx.stroke(); ctx.translate(-6, -6);
-                    ctx.strokeStyle = color; ctx.lineWidth = 8; ctx.shadowBlur = 20; ctx.shadowColor = color; drawBaseShape(ctx, sym, size); ctx.stroke();
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.shadowBlur = 10; ctx.shadowColor = '#ffffff'; drawBaseShape(ctx, sym, size); ctx.stroke();
-                }
+            ctx.save(); 
+            ctx.translate(x, y); 
+            
+            const img = loadedAssets[sym];
+            if (img && img.complete) {
+                if (isSpinning) { 
+                    ctx.globalAlpha = 0.8; // Slight transparency for motion blur
+                    ctx.scale(1, 1.15); // Stretch vertically to simulate speed
+                } 
+                // Draw image centered at the coordinate
+                ctx.drawImage(img, -size/2, -size/2, size, size);
             }
             ctx.restore();
         }
@@ -287,7 +313,7 @@
             
             initAudio(); canvasWrapper.classList.remove('win-glow');
             balance -= totalBetCost; 
-            fakeProgressive += (totalBetCost * 0.05); // Tick up the fake jackpot
+            fakeProgressive += (totalBetCost * 0.05);
             updateUI();
 
             let finalGrid = []; for (let c = 0; c < 5; c++) finalGrid.push([getRandomSymbol(), getRandomSymbol(), getRandomSymbol()]);
@@ -323,12 +349,23 @@
 
         function drawSlotCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 3; ctx.shadowBlur = 0;
+            
+            // Subtle dark overlay to separate reels from the background slightly
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Reel grid dividers
+            ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 4; ctx.shadowBlur = 0;
             for(let i=1; i<5; i++) { ctx.beginPath(); ctx.moveTo(i*200, 0); ctx.lineTo(i*200, 600); ctx.stroke(); }
             
             reels.forEach(reel => {
                 ctx.save(); ctx.beginPath(); ctx.rect(reel.id * 200, 0, 200, 600); ctx.clip();
-                for(let i=0; i<reel.symbols.length; i++) { let sym = reel.symbols[i]; let y = (i - 1) * 200 + reel.yOffset; drawSymbol(ctx, sym, reel.id * 200 + 100, y + 100, 140, reel.isSpinning); }
+                for(let i=0; i<reel.symbols.length; i++) { 
+                    let sym = reel.symbols[i]; 
+                    let y = (i - 1) * 200 + reel.yOffset; 
+                    // Draw size slightly smaller than the 200px cell for padding
+                    drawSymbol(ctx, sym, reel.id * 200 + 100, y + 100, 160, reel.isSpinning); 
+                }
                 ctx.restore();
             });
 
@@ -348,8 +385,9 @@
             drawSlotCanvas(); requestAnimationFrame(gameLoop);
         }
 
-        // --- Bonus Wheel w/ Enhanced Rendering ---
+        // --- PHASE 2/4 PROCEDURAL BONUS WHEEL (Unchanged) ---
         let wheelAngle = 0; let wheelVel = 0; let wheelState = 'WAITING'; let lastSegment = 0; let wheelWinAmt = 0;
+        const COLORS = ['#ff00ff', '#e2e8f0', '#fbbf24', '#06b6d4', '#22c55e', '#f97316'];
 
         function showBonusModal() { bonusModal.style.display = 'flex'; wheelSpinBtn.style.display = 'block'; wheelCollectBtn.style.display = 'none'; wheelAngle = 0; wheelWinAmt = 0; wheelState = 'WAITING'; drawBonusWheel(); }
         
@@ -362,17 +400,8 @@
                 
                 let mult = WHEEL_SEGMENTS[i];
                 if (mult >= 50) wCtx.fillStyle = '#ff00ff'; else if (mult >= 25) wCtx.fillStyle = '#22c55e'; else wCtx.fillStyle = '#06b6d4';
-                wCtx.shadowBlur = 15; wCtx.shadowColor = wCtx.fillStyle; wCtx.font = '900 35px Orbitron';
-                
-                // Enhanced Wedge Icons
-                wCtx.fillText(mult + 'x', 0, 30);
-                wCtx.translate(0, -35); wCtx.lineCap = 'round'; wCtx.lineJoin = 'round';
-                
-                if (mult >= 50) { wCtx.strokeStyle = '#06b6d4'; wCtx.lineWidth = 4; drawBaseShape(wCtx, SYMBOLS.DIAMOND, 35); wCtx.stroke(); } 
-                else if (mult >= 25) { wCtx.strokeStyle = '#fbbf24'; wCtx.lineWidth = 4; drawBaseShape(wCtx, SYMBOLS.VAULT, 35); wCtx.stroke(); } 
-                else if (mult >= 10) { wCtx.strokeStyle = '#e2e8f0'; wCtx.lineWidth = 4; drawBaseShape(wCtx, SYMBOLS.WATCH, 35); wCtx.stroke(); } 
-                else { wCtx.strokeStyle = '#ff00ff'; wCtx.lineWidth = 4; drawBaseShape(wCtx, SYMBOLS.X, 28); wCtx.stroke(); }
-                
+                wCtx.shadowBlur = 15; wCtx.shadowColor = wCtx.fillStyle; wCtx.font = '900 45px Orbitron';
+                wCtx.fillText(mult + 'x', 0, 0); 
                 wCtx.restore();
             }
             wCtx.restore();
@@ -403,10 +432,11 @@
         }
 
         // --- Interaction Listeners ---
-        canvas.addEventListener('click', () => { if (gameState === 'IDLE') spinLogic(); });
-        spinBtn.addEventListener('click', () => { if (gameState === 'IDLE') spinLogic(); });
+        canvas.addEventListener('click', () => { if (gameState === 'IDLE' && assetsLoadedCount === assetsToLoad) spinLogic(); });
+        spinBtn.addEventListener('click', () => { if (gameState === 'IDLE' && assetsLoadedCount === assetsToLoad) spinLogic(); });
 
         autoSpinBtn.addEventListener('click', () => {
+            if(assetsLoadedCount < assetsToLoad) return;
             initAudio(); isAutoSpin = !isAutoSpin; autoSpinBtn.innerText = isAutoSpin ? 'AUTO SPIN: ON' : 'AUTO SPIN: OFF';
             autoSpinBtn.classList.toggle('active', isAutoSpin); if (isAutoSpin && gameState === 'IDLE') spinLogic();
         });
@@ -417,7 +447,6 @@
             multBtn.innerText = `MULTIPLIER: ${activeMultiplier}X`; updateUI(); playSound('chip');
         });
 
-        // Hold-to-Bet Engine
         let holdTimer; let holdInterval;
         function updateBetAmount(direction) {
             if (gameState !== 'IDLE') return;
@@ -428,10 +457,7 @@
             updateUI();
         }
 
-        function startBetChange(direction) {
-            updateBetAmount(direction);
-            holdTimer = setTimeout(() => { holdInterval = setInterval(() => updateBetAmount(direction), 100); }, 400);
-        }
+        function startBetChange(direction) { updateBetAmount(direction); holdTimer = setTimeout(() => { holdInterval = setInterval(() => updateBetAmount(direction), 100); }, 400); }
         function stopBetChange() { clearTimeout(holdTimer); clearInterval(holdInterval); }
 
         betPlus.addEventListener('mousedown', () => startBetChange('up')); betPlus.addEventListener('mouseup', stopBetChange); betPlus.addEventListener('mouseleave', stopBetChange);
@@ -442,7 +468,9 @@
         wheelSpinBtn.addEventListener('click', () => { if (wheelState === 'WAITING') { initAudio(); wheelState = 'SPINNING'; wheelSpinBtn.style.display = 'none'; wheelVel = Math.random() * 0.15 + 0.4; requestAnimationFrame(updateWheelLoop); } });
         wheelCollectBtn.addEventListener('click', () => { initAudio(); bonusModal.style.display = 'none'; wheelWinAmt = 0; gameState = 'IDLE'; if (isAutoSpin) { setTimeout(() => { if (gameState === 'IDLE') spinLogic(); }, 1000); } });
 
-        updateUI(); drawSlotCanvas(); requestAnimationFrame(gameLoop);
+        updateUI(); 
+        // Initial drawing is handled by initAssets() once they load
+        requestAnimationFrame(gameLoop);
     </script>
 </body>
 </html>
