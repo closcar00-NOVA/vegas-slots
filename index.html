@@ -3,72 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WHEEL OF SIN - Vegas Pro Casino</title>
+    <title>WHEEL OF SIN - Peak65 Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-color: #0f172a; --panel-bg: #020617; --accent-cyan: #06b6d4; --accent-magenta: #ff00ff; --accent-gold: #fbbf24; --accent-green: #22c55e; --border-color: rgba(6, 182, 212, 0.5); }
-        body { margin: 0; padding: 0; background: linear-gradient(135deg, var(--panel-bg), var(--bg-color)); color: white; font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; user-select: none; }
-        .title { font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; letter-spacing: 6px; text-shadow: 0 0 20px var(--accent-magenta); }
-        #game-container { width: 100%; max-width: 1000px; display: flex; flex-direction: column; align-items: center; padding: 0 10px; box-sizing: border-box; }
-        .canvas-wrapper { width: 100%; aspect-ratio: 5 / 3; background: var(--panel-bg); border: 6px solid var(--border-color); border-radius: 16px; box-shadow: 0 0 40px rgba(6, 182, 212, 0.4); overflow: hidden; }
+        :root { --bg-color: #020617; --accent-cyan: #06b6d4; --accent-magenta: #ff00ff; --accent-gold: #fbbf24; --accent-green: #22c55e; }
+        body { margin: 0; padding: 20px; background: radial-gradient(circle at 50% 50%, #0f172a 0%, #000000 100%); color: white; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; user-select: none; }
+        
+        /* The Physical Cabinet Architecture */
+        .cabinet-wrapper { position: relative; display: flex; flex-direction: column; width: 100%; max-width: 900px; background: #000; border-radius: 24px 24px 12px 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.05); z-index: 10; margin-top: 20px; }
+        
+        /* Animated LED Light Pillars */
+        .led-pillar { position: absolute; top: 20px; bottom: 100px; width: 35px; background: linear-gradient(180deg, var(--accent-cyan), var(--accent-magenta), var(--accent-cyan)); background-size: 100% 200%; animation: ledFlow 3s linear infinite; z-index: 1; border-radius: 10px; }
+        .led-left { left: -45px; box-shadow: -15px 0 40px rgba(6, 182, 212, 0.6), inset 5px 0 10px rgba(255,255,255,0.4); }
+        .led-right { right: -45px; box-shadow: 15px 0 40px rgba(255, 0, 255, 0.6), inset -5px 0 10px rgba(255,255,255,0.4); }
+        @keyframes ledFlow { 0% { background-position: 0% 0%; } 100% { background-position: 0% 200%; } }
+
+        /* Cabinet Topper */
+        .topper { text-align: center; padding: 25px 20px; background: linear-gradient(180deg, #1e293b, #020617); border-bottom: 4px solid var(--accent-gold); border-radius: 24px 24px 0 0; position: relative; overflow: hidden; }
+        .topper::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transform: skewX(-30deg); animation: glare 5s infinite; }
+        @keyframes glare { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+        .title { font-size: 2.8rem; font-weight: 900; margin: 0 0 10px 0; letter-spacing: 8px; color: #fff; text-shadow: 0 0 15px var(--accent-magenta), 0 0 30px var(--accent-cyan); }
+        .progressive-label { font-size: 1rem; color: #94a3b8; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 5px; }
+        .progressive-amount { font-size: 4.5rem; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 30px rgba(251, 191, 36, 0.6); margin: 0; line-height: 1; }
+
+        /* Main Screen Area */
+        .screen-bezel { padding: 15px; background: #0f172a; border-left: 2px solid #334155; border-right: 2px solid #334155; }
+        .canvas-wrapper { width: 100%; aspect-ratio: 5 / 3; background: #020617; border: 4px solid rgba(6, 182, 212, 0.3); border-radius: 12px; box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9); position: relative; overflow: hidden; transition: all 0.3s ease; }
+        .canvas-wrapper.win-glow { animation: winGlow 1.2s infinite alternate; }
+        @keyframes winGlow { 0% { border-color: rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9); } 100% { border-color: var(--accent-gold); box-shadow: inset 0 0 80px rgba(251, 191, 36, 0.4), 0 0 40px var(--accent-gold); } }
         #slotCanvas { width: 100%; height: 100%; display: block; cursor: pointer; }
-        #controls { display: flex; justify-content: space-between; align-items: center; width: 100%; background: rgba(2, 6, 23, 0.8); border: 2px solid #1e293b; padding: 15px 30px; border-radius: 12px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
-        .stat-box { display: flex; flex-direction: column; align-items: center; background: #000; padding: 10px 20px; border-radius: 8px; border: 1px solid #334155; min-width: 150px; }
-        .stat-label { font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px; letter-spacing: 2px; }
-        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--accent-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
-        .bet-controls { display: flex; align-items: center; gap: 10px; }
-        
-        .bet-btn { background: #1e293b; border: 1px solid #475569; color: white; width: 30px; height: 30px; border-radius: 5px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-family: 'Orbitron', sans-serif; user-select: none; }
-        .bet-btn:hover { background: #334155; }
-        .bet-btn:active { transform: scale(0.9); }
 
-        #spin-group { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        /* Control Deck */
+        #controls { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, #1e293b, #000); padding: 25px 30px; border-radius: 0 0 12px 12px; border-top: 2px solid #475569; position: relative; z-index: 2; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); }
+        .stat-box { display: flex; flex-direction: column; align-items: center; background: #020617; padding: 12px 24px; border-radius: 8px; border: 1px solid #334155; min-width: 160px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.8); }
+        .stat-label { font-size: 0.8rem; color: #64748b; margin-bottom: 5px; letter-spacing: 2px; }
+        .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--accent-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+        .bet-controls { display: flex; align-items: center; gap: 12px; }
+        .bet-btn { background: linear-gradient(180deg, #334155, #0f172a); border: 1px solid #475569; color: white; width: 36px; height: 36px; border-radius: 6px; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-family: 'Orbitron', sans-serif; user-select: none; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
+        .bet-btn:hover { background: #475569; } .bet-btn:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+
+        #spin-group { display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .toggle-group { display: flex; gap: 10px; }
-        
-        #spinBtn { background: linear-gradient(180deg, var(--accent-green), #166534); border: 2px solid #4ade80; color: white; font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; padding: 15px 60px; border-radius: 40px; cursor: pointer; box-shadow: 0 0 25px rgba(34, 197, 94, 0.5); text-transform: uppercase; letter-spacing: 2px; transition: all 0.1s; }
-        #spinBtn:hover { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8); transform: translateY(-2px); }
-        #spinBtn:active { transform: translateY(2px) scale(0.95); box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
-        #spinBtn:disabled { background: #1e293b; border-color: #334155; color: #64748b; box-shadow: none; cursor: not-allowed; transform: none; }
+        #spinBtn { background: linear-gradient(180deg, var(--accent-green), #14532d); border: 3px solid #4ade80; color: white; font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; padding: 18px 70px; border-radius: 50px; cursor: pointer; box-shadow: 0 10px 25px rgba(20, 83, 45, 0.8), inset 0 5px 10px rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 3px; transition: all 0.1s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        #spinBtn:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 15px 30px rgba(34, 197, 94, 0.5), inset 0 5px 10px rgba(255,255,255,0.4); }
+        #spinBtn:active { transform: translateY(4px); box-shadow: 0 2px 5px rgba(20, 83, 45, 0.8); }
+        #spinBtn:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .sys-btn { background: transparent; border: 2px solid var(--accent-cyan); color: var(--accent-cyan); padding: 6px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .sys-btn:hover { background: rgba(6, 182, 212, 0.1); }
+        .sys-btn { background: #0f172a; border: 2px solid #334155; color: #94a3b8; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .sys-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
         .sys-btn.active { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px var(--accent-cyan); border-color: var(--accent-cyan); }
 
         #bonus-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(15px); }
-        .modal-title { font-size: 3rem; color: var(--accent-gold); text-shadow: 0 0 20px var(--accent-gold); margin-bottom: 20px; animation: pulsateGold 1s infinite alternate; }
-        @keyframes pulsateGold { 0% { text-shadow: 0 0 10px var(--accent-gold); } 100% { text-shadow: 0 0 30px #fff, 0 0 50px var(--accent-gold); } }
-        
-        .wheel-container { position: relative; width: 90vw; max-width: 600px; aspect-ratio: 1; margin-bottom: 30px; }
-        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 50px rgba(251, 191, 36, 0.3); }
-        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 25px solid transparent; border-right: 25px solid transparent; border-top: 50px solid #ef4444; z-index: 10; filter: drop-shadow(0 0 15px #ef4444); }
-        
+        .modal-title { font-size: 3.5rem; color: var(--accent-gold); text-shadow: 0 0 30px var(--accent-gold); margin-bottom: 30px; animation: pulsateGold 1s infinite alternate; }
+        .wheel-container { position: relative; width: 90vw; max-width: 650px; aspect-ratio: 1; margin-bottom: 40px; }
+        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 80px rgba(251, 191, 36, 0.4); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 30px solid transparent; border-right: 30px solid transparent; border-top: 60px solid #ef4444; z-index: 10; filter: drop-shadow(0 0 20px #ef4444); }
         .modal-controls { display: flex; gap: 20px; }
-        .modal-btn { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; padding: 15px 40px; border-radius: 30px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: all 0.2s; }
-        #wheelSpinBtn { background: linear-gradient(180deg, var(--accent-magenta), #9d009d); border: 2px solid #ff66ff; color: white; box-shadow: 0 0 30px rgba(255, 0, 255, 0.6); }
-        #wheelSpinBtn:hover { box-shadow: 0 0 50px rgba(255, 0, 255, 0.9); transform: scale(1.05); } #wheelSpinBtn:active { transform: scale(0.95); }
-        #wheelCollectBtn { display: none; background: linear-gradient(180deg, var(--accent-gold), #b45309); border: 2px solid #fde047; color: #000; box-shadow: 0 0 30px rgba(251, 191, 36, 0.6); }
-        #wheelCollectBtn:hover { box-shadow: 0 0 50px rgba(251, 191, 36, 0.9); transform: scale(1.05); } #wheelCollectBtn:active { transform: scale(0.95); }
+        .modal-btn { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900; padding: 20px 50px; border-radius: 40px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: all 0.2s; }
+        #wheelSpinBtn { background: linear-gradient(180deg, var(--accent-magenta), #9d009d); border: 2px solid #ff66ff; color: white; box-shadow: 0 0 40px rgba(255, 0, 255, 0.6); }
+        #wheelSpinBtn:hover { filter: brightness(1.2); transform: scale(1.05); } #wheelSpinBtn:active { transform: scale(0.95); }
+        #wheelCollectBtn { display: none; background: linear-gradient(180deg, var(--accent-gold), #b45309); border: 2px solid #fde047; color: #000; box-shadow: 0 0 40px rgba(251, 191, 36, 0.6); }
+        #wheelCollectBtn:hover { filter: brightness(1.2); transform: scale(1.05); } #wheelCollectBtn:active { transform: scale(0.95); }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+            .led-pillar { display: none; } /* Hide heavy LEDs on mobile/fold inner screens */
+            .cabinet-wrapper { margin-top: 0; border-radius: 0; }
+            .topper { border-radius: 0; padding: 15px; }
+            .progressive-amount { font-size: 3rem; }
             .title { font-size: 2rem; }
-            #controls { flex-direction: column; gap: 20px; padding: 15px; }
-            #spin-group { width: 100%; }
-            #spinBtn { width: 100%; font-size: 1.5rem; }
+            #controls { flex-direction: column; gap: 20px; padding: 20px; }
+            #spin-group { width: 100%; order: -1; }
+            #spinBtn { width: 100%; font-size: 1.8rem; }
             .stat-box { width: 100%; flex-direction: row; justify-content: space-between; }
             .stat-label { margin-bottom: 0; }
-            .modal-title { font-size: 2rem; }
+            .modal-title { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1 class="title">WHEEL OF SIN</h1>
-    </div>
+    <div class="cabinet-wrapper">
+        <div class="led-pillar led-left"></div>
+        <div class="led-pillar led-right"></div>
+        
+        <div class="topper">
+            <h1 class="title">WHEEL OF SIN</h1>
+            <div class="progressive-label">Super Cash Link</div>
+            <div class="progressive-amount" id="progressiveDisplay">$42,500.00</div>
+        </div>
 
-    <div id="game-container">
-        <div class="canvas-wrapper" id="canvasWrapper">
-            <canvas id="slotCanvas" width="1000" height="600"></canvas>
+        <div class="screen-bezel">
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <canvas id="slotCanvas" width="1000" height="600"></canvas>
+            </div>
         </div>
 
         <div id="controls">
@@ -134,6 +161,7 @@
         let balance = parseInt(localStorage.getItem('vegas_pro_master_bankroll')) || 1000000;
         let baseBet = 100;
         let activeMultiplier = 1;
+        let fakeProgressive = 42500.00;
         let gameState = 'IDLE'; 
         let winningLines = [];
         let totalWin = 0;
@@ -148,6 +176,7 @@
         const multBtn = document.getElementById('multBtn');
         const betMinus = document.getElementById('betMinus'); const betPlus = document.getElementById('betPlus');
         const balanceDisplay = document.getElementById('balanceDisplay'); const betDisplay = document.getElementById('betDisplay');
+        const progDisplay = document.getElementById('progressiveDisplay');
         const bonusModal = document.getElementById('bonus-modal');
         const wheelSpinBtn = document.getElementById('wheelSpinBtn'); const wheelCollectBtn = document.getElementById('wheelCollectBtn');
 
@@ -162,6 +191,7 @@
         function updateUI() {
             balanceDisplay.innerText = formatMoney(balance);
             betDisplay.innerText = formatMoney(baseBet * activeMultiplier);
+            progDisplay.innerText = formatMoney(fakeProgressive) + '.00';
             localStorage.setItem('vegas_pro_master_bankroll', balance);
         }
 
@@ -188,7 +218,7 @@
             else if (type === 'chip') { osc.type = 'sine'; osc.frequency.setValueAtTime(400, t); osc.frequency.exponentialRampToValueAtTime(200, t + 0.05); gain.gain.setValueAtTime(0.2, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05); osc.start(t); osc.stop(t + 0.05); }
         }
 
-        function formatMoney(num) { return '$' + num.toLocaleString(); }
+        function formatMoney(num) { return '$' + Math.floor(num).toLocaleString(); }
         function getRandomSymbol() { let r = Math.random() * 100; for (let i = 0; i < WEIGHTS.length; i++) { if (r < WEIGHTS[i]) return i; r -= WEIGHTS[i]; } return 0; }
 
         // --- Vector Rendering Engine ---
@@ -256,7 +286,9 @@
             if (balance < totalBetCost) { isAutoSpin = false; autoSpinBtn.innerText = 'AUTO SPIN: OFF'; autoSpinBtn.classList.remove('active'); alert("Insufficient Balance!"); return; }
             
             initAudio(); canvasWrapper.classList.remove('win-glow');
-            balance -= totalBetCost; updateUI();
+            balance -= totalBetCost; 
+            fakeProgressive += (totalBetCost * 0.05); // Tick up the fake jackpot
+            updateUI();
 
             let finalGrid = []; for (let c = 0; c < 5; c++) finalGrid.push([getRandomSymbol(), getRandomSymbol(), getRandomSymbol()]);
             reels.forEach(r => r.spin()); gameState = 'SPINNING'; winningLines = []; totalWin = 0; bonusCount = 0; spinBtn.disabled = true; multBtn.disabled = true; betPlus.disabled = true; betMinus.disabled = true;
