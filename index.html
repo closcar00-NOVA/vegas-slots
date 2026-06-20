@@ -153,7 +153,7 @@
 
     <script>
         const SYMBOLS = { X: 0, WATCH: 1, VAULT: 2, DIAMOND: 3, WILD: 4, BONUS: 5 };
-        const WEIGHTS = [40, 25, 15, 10, 5, 5]; 
+        const WEIGHTS = [40, 25, 15, 10, 500, 5]; 
 
         const PAYLINES = [
             [1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2],
@@ -165,7 +165,7 @@
             [SYMBOLS.WATCH]:   [5,   15,  35],
             [SYMBOLS.VAULT]:   [10,  30,  75],
             [SYMBOLS.DIAMOND]: [25,  75,  250],
-            [SYMBOLS.WILD]:    [50,  250, 1000]
+            [SYMBOLS.WILD]:    [50,  250, 5000]
         };
 
         const WHEEL_SEGMENTS = [5, 10, 5, 25, 5, 10, 5, 50, 5, 10, 25, 100];
