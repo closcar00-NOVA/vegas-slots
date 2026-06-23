@@ -16,8 +16,14 @@
             color: white; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; user-select: none; 
         }
         
-        /* The Physical Cabinet Architecture */
-        .cabinet-wrapper { position: relative; display: flex; flex-direction: column; width: 100%; max-width: 900px; background: #000; border-radius: 24px 24px 12px 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.05); z-index: 10; margin-top: 20px; }
+        /* The Physical Cabinet Architecture (Now Responsive) */
+        .cabinet-wrapper { 
+            position: relative; display: flex; flex-direction: column; width: 100%; max-width: 900px; 
+            background: #000; border-radius: 24px 24px 12px 12px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.05); 
+            z-index: 10; margin-top: 20px; 
+            max-height: 95vh; overflow: hidden; /* Fixes cut-off by forcing interior to shrink */
+        }
         
         /* Animated LED Light Pillars */
         .led-pillar { position: absolute; top: 20px; bottom: 100px; width: 35px; background: linear-gradient(180deg, var(--accent-cyan), var(--accent-magenta), var(--accent-cyan)); background-size: 100% 200%; animation: ledFlow 3s linear infinite; z-index: 1; border-radius: 10px; }
@@ -38,7 +44,7 @@
         
         /* PHASE 3 ASSET: Reel Backing Texture */
         .canvas-wrapper { 
-            width: 100%; aspect-ratio: 5 / 3; 
+            flex-grow: 1; min-height: 0; width: 100%; aspect-ratio: 5 / 3; /* Responsive flex constraints */
             background: #020617 url('env_reel_backing.png') repeat center center; 
             background-size: cover;
             border: 4px solid rgba(6, 182, 212, 0.3); border-radius: 12px; 
@@ -53,7 +59,10 @@
         #controls { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, #1e293b, #000); padding: 25px 30px; border-radius: 0 0 12px 12px; border-top: 2px solid #475569; position: relative; z-index: 2; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); }
         .stat-box { display: flex; flex-direction: column; align-items: center; background: #020617; padding: 12px 24px; border-radius: 8px; border: 1px solid #334155; min-width: 160px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.8); }
         .stat-label { font-size: 0.8rem; color: #64748b; margin-bottom: 5px; letter-spacing: 2px; }
-        .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--accent-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+        
+        /* Fixed width prevents UI jumping when numbers change */
+        .stat-value { min-width: 120px; text-align: center; font-size: 1.6rem; font-weight: 700; color: var(--accent-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+        
         .bet-controls { display: flex; align-items: center; gap: 12px; }
         .bet-btn { background: linear-gradient(180deg, #334155, #0f172a); border: 1px solid #475569; color: white; width: 36px; height: 36px; border-radius: 6px; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-family: 'Orbitron', sans-serif; user-select: none; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
         .bet-btn:hover { background: #475569; } .bet-btn:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
@@ -65,7 +74,8 @@
         #spinBtn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 5px rgba(20, 83, 45, 0.8); }
         #spinBtn:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .sys-btn { background: #0f172a; border: 2px solid #334155; color: #94a3b8; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        /* Fixed width prevents UI jumping on toggle */
+        .sys-btn { min-width: 160px; text-align: center; background: #0f172a; border: 2px solid #334155; color: #94a3b8; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .sys-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
         .sys-btn.active { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px var(--accent-cyan); border-color: var(--accent-cyan); }
 
@@ -73,8 +83,6 @@
         .modal-title { font-size: 3.5rem; color: var(--accent-gold); text-shadow: 0 0 30px var(--accent-gold); margin-bottom: 30px; animation: pulsateGold 1s infinite alternate; }
         .wheel-container { position: relative; width: 90vw; max-width: 650px; aspect-ratio: 1; margin-bottom: 40px; }
         #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 80px rgba(6, 182, 212, 0.3); }
-        
-        /* The old CSS pointer has been removed - we draw it on Canvas now */
         
         .modal-controls { display: flex; gap: 20px; }
         .modal-btn { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900; padding: 20px 50px; border-radius: 40px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: all 0.2s; }
@@ -85,7 +93,7 @@
 
         @media (max-width: 900px) {
             .led-pillar { display: none; }
-            .cabinet-wrapper { margin-top: 0; border-radius: 0; }
+            .cabinet-wrapper { margin-top: 0; border-radius: 0; max-height: none; }
             .topper { border-radius: 0; padding: 15px; }
             .progressive-amount { font-size: 3rem; }
             .title { font-size: 2rem; }
@@ -154,7 +162,7 @@
 
     <script>
         const SYMBOLS = { X: 0, WATCH: 1, VAULT: 2, DIAMOND: 3, WILD: 4, BONUS: 5 };
-        const WEIGHTS = [1, 1, 1, 1, 1, 5000]; 
+        const WEIGHTS = [40, 25, 15, 10, 5, 5]; // Balanced for regular play (set BONUS to 200 for fast wheel testing)
 
         const PAYLINES = [
             [1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2],
@@ -185,19 +193,27 @@
         const bonusModal = document.getElementById('bonus-modal');
         const wheelSpinBtn = document.getElementById('wheelSpinBtn'); const wheelCollectBtn = document.getElementById('wheelCollectBtn');
 
-        // --- EXTENDED ASSET PRELOADER (Now Loading 15 Files) ---
+        // --- THE FULL 20-ASSET PRELOADER ---
         const loadedAssets = {};
-        let assetsToLoad = 15;
+        let assetsToLoad = 20;
         let assetsLoadedCount = 0;
 
         const assetMap = {
+            // Base Symbols
             [SYMBOLS.X]: 'symbol_x.png',
             [SYMBOLS.WATCH]: 'symbol_watch.png',
             [SYMBOLS.VAULT]: 'symbol_vault.png',
             [SYMBOLS.DIAMOND]: 'symbol_diamond.png',
             [SYMBOLS.WILD]: 'symbol_wild.png',
             [SYMBOLS.BONUS]: 'symbol_bonus.png',
+            // Animated Sprites
+            'X_ANIM': 'x_win_anim.png',
+            'WATCH_ANIM': 'watch_win_anim.png',
+            'VAULT_ANIM': 'vault_win_anim.png',
             'DIAMOND_ANIM': 'diamond_win_anim.png',
+            'WILD_ANIM': 'wild_win_anim.png',
+            'BONUS_ANIM': 'bonus_win_anim.png',
+            // Wheel Assets
             'WHEEL_FACE': 'wheel_face.png',
             'WHEEL_HUB': 'wheel_hub.png',
             'WHEEL_POINTER': 'wheel_pointer.png',
@@ -282,18 +298,31 @@
         let globalFrameCount = 0;
         setInterval(() => { globalFrameCount++; }, 100);
 
+        // Map integer symbols to their animation asset keys
+        const ANIM_MAP = {
+            [SYMBOLS.X]: 'X_ANIM',
+            [SYMBOLS.WATCH]: 'WATCH_ANIM',
+            [SYMBOLS.VAULT]: 'VAULT_ANIM',
+            [SYMBOLS.DIAMOND]: 'DIAMOND_ANIM',
+            [SYMBOLS.WILD]: 'WILD_ANIM',
+            [SYMBOLS.BONUS]: 'BONUS_ANIM'
+        };
+
+        // --- FULLY DYNAMIC SPRITE RENDERER ---
         function drawSymbol(ctx, sym, x, y, size, isSpinning, isWinningSymbol = false) {
             ctx.save(); 
             ctx.translate(x, y); 
             
-            // Check if this is a winning diamond that needs to animate
-            if (sym === SYMBOLS.DIAMOND && isWinningSymbol && gameState === 'IDLE') {
-                const animImg = loadedAssets['DIAMOND_ANIM'];
+            // If the symbol is part of a win line, attempt to load its sprite sheet
+            if (isWinningSymbol && gameState === 'IDLE') {
+                const animKey = ANIM_MAP[sym];
+                const animImg = loadedAssets[animKey];
+                
                 if (animImg && animImg.complete) {
-                    let currentFrame = globalFrameCount % 5; 
+                    let currentFrame = globalFrameCount % 5; // Cycles 0 to 4
                     ctx.drawImage(animImg, currentFrame * 200, 0, 200, 200, -size/2, -size/2, size, size);
                     ctx.restore();
-                    return;
+                    return; // Exit early so static image isn't drawn over the animation
                 }
             }
 
@@ -443,26 +472,22 @@
             // 2. Map the Text Images to the Wedges
             for(let i = 0; i < NUM_SEGMENTS; i++) {
                 wCtx.save();
-                // Rotate to the absolute center of this specific wedge
                 wCtx.rotate(i * ARC + ARC/2);
-                
-                wCtx.translate(260, 0); // CHANGED: Pushed further out toward the rim
-                wCtx.rotate(Math.PI/2); // Turn text upright
+                wCtx.translate(260, 0); 
+                wCtx.rotate(Math.PI/2); 
 
                 let mult = WHEEL_SEGMENTS[i];
                 let textImg = loadedAssets[`TEXT_${mult}X`];
                 if (textImg && textImg.complete) {
-                    // CHANGED: Shrunk from 120px to 85px so they fit between the spokes
                     wCtx.drawImage(textImg, -42.5, -42.5, 85, 85); 
                 }
-                wCtx.restore(); // Restores the individual text rotation
-        }
-        
-        wCtx.restore(); // <--- THIS IS THE MISSING LINE! (Resets the main wheel rotation)
+                wCtx.restore();
+            }
+            wCtx.restore(); // Resets main wheel rotation
 
-        // 3. Draw Static Center Hub over the spinning face
-        if (hubImg && hubImg.complete) {
-            wCtx.drawImage(hubImg, 260, 260, 280, 280);
+            // 3. Draw Static Center Hub over the spinning face
+            if (hubImg && hubImg.complete) {
+                wCtx.drawImage(hubImg, 260, 260, 280, 280); 
             }
 
             // 4. Draw Static Red Pointer Hovering at 12 o'clock
