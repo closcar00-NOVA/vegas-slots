@@ -186,7 +186,7 @@
 
         // --- PHASE 1 ASSET PRELOADER ---
         const loadedAssets = {};
-        let assetsToLoad = 6;
+        let assetsToLoad = 7;
         let assetsLoadedCount = 0;
 
         const assetMap = {
@@ -195,7 +195,8 @@
             [SYMBOLS.VAULT]: 'symbol_vault.png',
             [SYMBOLS.DIAMOND]: 'symbol_diamond.png',
             [SYMBOLS.WILD]: 'symbol_wild.png',
-            [SYMBOLS.BONUS]: 'symbol_bonus.png'
+            [SYMBOLS.BONUS]: 'symbol_bonus.png',
+            'DIAMOND_ANIM': 'diamond_win_anim.png'
         };
 
         function initAssets() {
@@ -268,11 +269,34 @@
         function formatMoney(num) { return '$' + Math.floor(num).toLocaleString(); }
         function getRandomSymbol() { let r = Math.random() * 100; for (let i = 0; i < WEIGHTS.length; i++) { if (r < WEIGHTS[i]) return i; r -= WEIGHTS[i]; } return 0; }
 
+        // Global animation timer
+        let globalFrameCount = 0;
+        setInterval(() => { globalFrameCount++; }, 100);
+
         // --- NEW Image-Based Rendering Engine ---
-        function drawSymbol(ctx, sym, x, y, size, isSpinning) {
+        function drawSymbol(ctx, sym, x, y, size, isSpinning, isWinningSymbol = false) {
             ctx.save(); 
             ctx.translate(x, y); 
             
+            // Check if this is a winning diamond that needs to animate
+            if (sym === SYMBOLS.DIAMOND && isWinningSymbol && gameState === 'IDLE') {
+                const animImg = loadedAssets['DIAMOND_ANIM'];
+                if (animImg && animImg.complete) {
+                    // Calculate which of the 5 frames to show
+                    let currentFrame = globalFrameCount % 5; 
+                    
+                    // The Sprite Sheet Magic Formula
+                    ctx.drawImage(
+                        animImg, 
+                        currentFrame * 200, 0, 200, 200, // Crop the specific frame
+                        -size/2, -size/2, size, size     // Draw it on the canvas
+                    );
+                    ctx.restore();
+                    return; // Exit early so we don't draw the static image over it
+                }
+            }
+
+            // Default static rendering for everything else
             const img = loadedAssets[sym];
             if (img && img.complete) {
                 if (isSpinning) { 
@@ -358,13 +382,30 @@
             ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 4; ctx.shadowBlur = 0;
             for(let i=1; i<5; i++) { ctx.beginPath(); ctx.moveTo(i*200, 0); ctx.lineTo(i*200, 600); ctx.stroke(); }
             
-            reels.forEach(reel => {
-                ctx.save(); ctx.beginPath(); ctx.rect(reel.id * 200, 0, 200, 600); ctx.clip();
-                for(let i=0; i<reel.symbols.length; i++) { 
+            reels.forEach((reel, colIndex) => {
+                ctx.save(); 
+                ctx.beginPath(); 
+                ctx.rect(colIndex * 200, 0, 200, 600); 
+                ctx.clip();
+                
+                for(let i = 0; i < reel.symbols.length; i++) { 
                     let sym = reel.symbols[i]; 
-                    let y = (i - 1) * 200 + reel.yOffset; 
-                    // Draw size slightly smaller than the 200px cell for padding
-                    drawSymbol(ctx, sym, reel.id * 200 + 100, y + 100, 160, reel.isSpinning); 
+                    let rowIndex = i - 1; // The visible row index (0, 1, or 2)
+                    let y = rowIndex * 200 + reel.yOffset; 
+                    
+                    // --- Check if this specific symbol is part of a winning line ---
+                    let isWinningSymbol = false;
+                    if (gameState === 'IDLE' && winningLines.length > 0) {
+                        winningLines.forEach(win => {
+                            // If this column is part of the match, and the row matches the payline
+                            if (colIndex < win.matchCount && win.line[colIndex] === rowIndex) {
+                                isWinningSymbol = true;
+                            }
+                        });
+                    }
+
+                    // Pass 'isWinningSymbol' to our drawSymbol function
+                    drawSymbol(ctx, sym, colIndex * 200 + 100, y + 100, 160, reel.isSpinning, isWinningSymbol); 
                 }
                 ctx.restore();
             });
