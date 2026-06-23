@@ -72,8 +72,10 @@
         #bonus-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(15px); }
         .modal-title { font-size: 3.5rem; color: var(--accent-gold); text-shadow: 0 0 30px var(--accent-gold); margin-bottom: 30px; animation: pulsateGold 1s infinite alternate; }
         .wheel-container { position: relative; width: 90vw; max-width: 650px; aspect-ratio: 1; margin-bottom: 40px; }
-        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 80px rgba(251, 191, 36, 0.4); }
-        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 30px solid transparent; border-right: 30px solid transparent; border-top: 60px solid #ef4444; z-index: 10; filter: drop-shadow(0 0 20px #ef4444); }
+        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 80px rgba(6, 182, 212, 0.3); }
+        
+        /* The old CSS pointer has been removed - we draw it on Canvas now */
+        
         .modal-controls { display: flex; gap: 20px; }
         .modal-btn { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900; padding: 20px 50px; border-radius: 40px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: all 0.2s; }
         #wheelSpinBtn { background: linear-gradient(180deg, var(--accent-magenta), #9d009d); border: 2px solid #ff66ff; color: white; box-shadow: 0 0 40px rgba(255, 0, 255, 0.6); }
@@ -142,7 +144,6 @@
     <div id="bonus-modal">
         <div class="modal-title">BONUS TRIGGERED!</div>
         <div class="wheel-container">
-            <div class="pointer"></div>
             <canvas id="wheelCanvas" width="800" height="800"></canvas>
         </div>
         <div class="modal-controls">
@@ -184,9 +185,9 @@
         const bonusModal = document.getElementById('bonus-modal');
         const wheelSpinBtn = document.getElementById('wheelSpinBtn'); const wheelCollectBtn = document.getElementById('wheelCollectBtn');
 
-        // --- PHASE 1 ASSET PRELOADER ---
+        // --- EXTENDED ASSET PRELOADER (Now Loading 15 Files) ---
         const loadedAssets = {};
-        let assetsToLoad = 7;
+        let assetsToLoad = 15;
         let assetsLoadedCount = 0;
 
         const assetMap = {
@@ -196,7 +197,15 @@
             [SYMBOLS.DIAMOND]: 'symbol_diamond.png',
             [SYMBOLS.WILD]: 'symbol_wild.png',
             [SYMBOLS.BONUS]: 'symbol_bonus.png',
-            'DIAMOND_ANIM': 'diamond_win_anim.png'
+            'DIAMOND_ANIM': 'diamond_win_anim.png',
+            'WHEEL_FACE': 'wheel_face.png',
+            'WHEEL_HUB': 'wheel_hub.png',
+            'WHEEL_POINTER': 'wheel_pointer.png',
+            'TEXT_5X': 'text_5x.png',
+            'TEXT_10X': 'text_10x.png',
+            'TEXT_25X': 'text_25x.png',
+            'TEXT_50X': 'text_50x.png',
+            'TEXT_100X': 'text_100x.png'
         };
 
         function initAssets() {
@@ -273,7 +282,6 @@
         let globalFrameCount = 0;
         setInterval(() => { globalFrameCount++; }, 100);
 
-        // --- NEW Image-Based Rendering Engine ---
         function drawSymbol(ctx, sym, x, y, size, isSpinning, isWinningSymbol = false) {
             ctx.save(); 
             ctx.translate(x, y); 
@@ -282,17 +290,10 @@
             if (sym === SYMBOLS.DIAMOND && isWinningSymbol && gameState === 'IDLE') {
                 const animImg = loadedAssets['DIAMOND_ANIM'];
                 if (animImg && animImg.complete) {
-                    // Calculate which of the 5 frames to show
                     let currentFrame = globalFrameCount % 5; 
-                    
-                    // The Sprite Sheet Magic Formula
-                    ctx.drawImage(
-                        animImg, 
-                        currentFrame * 200, 0, 200, 200, // Crop the specific frame
-                        -size/2, -size/2, size, size     // Draw it on the canvas
-                    );
+                    ctx.drawImage(animImg, currentFrame * 200, 0, 200, 200, -size/2, -size/2, size, size);
                     ctx.restore();
-                    return; // Exit early so we don't draw the static image over it
+                    return;
                 }
             }
 
@@ -300,10 +301,9 @@
             const img = loadedAssets[sym];
             if (img && img.complete) {
                 if (isSpinning) { 
-                    ctx.globalAlpha = 0.8; // Slight transparency for motion blur
-                    ctx.scale(1, 1.15); // Stretch vertically to simulate speed
+                    ctx.globalAlpha = 0.8; 
+                    ctx.scale(1, 1.15); 
                 } 
-                // Draw image centered at the coordinate
                 ctx.drawImage(img, -size/2, -size/2, size, size);
             }
             ctx.restore();
@@ -373,12 +373,9 @@
 
         function drawSlotCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Subtle dark overlay to separate reels from the background slightly
             ctx.fillStyle = 'rgba(0,0,0,0.3)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Reel grid dividers
             ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 4; ctx.shadowBlur = 0;
             for(let i=1; i<5; i++) { ctx.beginPath(); ctx.moveTo(i*200, 0); ctx.lineTo(i*200, 600); ctx.stroke(); }
             
@@ -390,21 +387,18 @@
                 
                 for(let i = 0; i < reel.symbols.length; i++) { 
                     let sym = reel.symbols[i]; 
-                    let rowIndex = i - 1; // The visible row index (0, 1, or 2)
+                    let rowIndex = i - 1; 
                     let y = rowIndex * 200 + reel.yOffset; 
                     
-                    // --- Check if this specific symbol is part of a winning line ---
                     let isWinningSymbol = false;
                     if (gameState === 'IDLE' && winningLines.length > 0) {
                         winningLines.forEach(win => {
-                            // If this column is part of the match, and the row matches the payline
                             if (colIndex < win.matchCount && win.line[colIndex] === rowIndex) {
                                 isWinningSymbol = true;
                             }
                         });
                     }
 
-                    // Pass 'isWinningSymbol' to our drawSymbol function
                     drawSymbol(ctx, sym, colIndex * 200 + 100, y + 100, 160, reel.isSpinning, isWinningSymbol); 
                 }
                 ctx.restore();
@@ -426,31 +420,64 @@
             drawSlotCanvas(); requestAnimationFrame(gameLoop);
         }
 
-        // --- PHASE 2/4 PROCEDURAL BONUS WHEEL (Unchanged) ---
+        // --- NEW IMAGE-BASED BONUS WHEEL LOGIC ---
         let wheelAngle = 0; let wheelVel = 0; let wheelState = 'WAITING'; let lastSegment = 0; let wheelWinAmt = 0;
-        const COLORS = ['#ff00ff', '#e2e8f0', '#fbbf24', '#06b6d4', '#22c55e', '#f97316'];
 
         function showBonusModal() { bonusModal.style.display = 'flex'; wheelSpinBtn.style.display = 'block'; wheelCollectBtn.style.display = 'none'; wheelAngle = 0; wheelWinAmt = 0; wheelState = 'WAITING'; drawBonusWheel(); }
         
         function drawBonusWheel() {
-            wCtx.clearRect(0, 0, 800, 800); wCtx.save(); wCtx.translate(400, 400); wCtx.rotate(wheelAngle);
+            wCtx.clearRect(0, 0, 800, 800); 
 
-            for(let i=0; i<NUM_SEGMENTS; i++) {
-                wCtx.beginPath(); wCtx.moveTo(0,0); wCtx.arc(0, 0, 380, i*ARC, (i+1)*ARC); wCtx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a'; wCtx.fill(); wCtx.strokeStyle = '#fbbf24'; wCtx.lineWidth = 4; wCtx.stroke();
-                wCtx.save(); wCtx.rotate(i*ARC + ARC/2); wCtx.translate(300, 0); wCtx.rotate(Math.PI/2); wCtx.textAlign = 'center'; wCtx.textBaseline = 'middle';
-                
+            const faceImg = loadedAssets['WHEEL_FACE'];
+            const hubImg = loadedAssets['WHEEL_HUB'];
+            const pointerImg = loadedAssets['WHEEL_POINTER'];
+
+            if (!faceImg || !faceImg.complete) return; // Wait until loaded
+
+            // 1. Draw Spinning Wheel Face
+            wCtx.save();
+            wCtx.translate(400, 400);
+            wCtx.rotate(wheelAngle);
+            wCtx.drawImage(faceImg, -400, -400, 800, 800); 
+
+            // 2. Map the Text Images to the Wedges
+            for(let i = 0; i < NUM_SEGMENTS; i++) {
+                wCtx.save();
+                // Rotate to the absolute center of this specific wedge
+                wCtx.rotate(i * ARC + ARC/2);
+                wCtx.translate(220, 0); // Push it outward toward the rim
+                wCtx.rotate(Math.PI/2); // Turn text upright
+
                 let mult = WHEEL_SEGMENTS[i];
-                if (mult >= 50) wCtx.fillStyle = '#ff00ff'; else if (mult >= 25) wCtx.fillStyle = '#22c55e'; else wCtx.fillStyle = '#06b6d4';
-                wCtx.shadowBlur = 15; wCtx.shadowColor = wCtx.fillStyle; wCtx.font = '900 45px Orbitron';
-                wCtx.fillText(mult + 'x', 0, 0); 
+                let textImg = loadedAssets[`TEXT_${mult}X`];
+                if (textImg && textImg.complete) {
+                    wCtx.drawImage(textImg, -60, -60, 120, 120); // Scale the text asset to fit
+                }
                 wCtx.restore();
             }
-            wCtx.restore();
+            wCtx.restore(); // Reset translation/rotation for the static pieces
 
-            wCtx.beginPath(); wCtx.arc(400, 400, 50, 0, Math.PI*2); wCtx.fillStyle = '#fbbf24'; wCtx.fill(); wCtx.strokeStyle = '#000'; wCtx.lineWidth = 10; wCtx.stroke();
+            // 3. Draw Static Center Hub over the spinning face
+            if (hubImg && hubImg.complete) {
+                wCtx.drawImage(hubImg, 260, 260, 280, 280); 
+            }
 
+            // 4. Draw Static Red Pointer Hovering at 12 o'clock
+            if (pointerImg && pointerImg.complete) {
+                wCtx.drawImage(pointerImg, 350, 0, 100, 130); 
+            }
+
+            // 5. Draw the Win Overlay
             if (wheelState === 'STOPPED' && wheelWinAmt > 0) {
-                wCtx.fillStyle = 'rgba(0,0,0,0.85)'; wCtx.fillRect(0,0,800,800); wCtx.font = '900 80px Orbitron'; wCtx.textAlign = 'center'; wCtx.textBaseline = 'middle'; wCtx.fillStyle = '#22c55e'; wCtx.shadowBlur = 30; wCtx.shadowColor = '#22c55e'; wCtx.fillText(`WON ${formatMoney(wheelWinAmt)}!`, 400, 400);
+                wCtx.fillStyle = 'rgba(0,0,0,0.85)'; 
+                wCtx.fillRect(0,0,800,800); 
+                wCtx.font = '900 80px Orbitron'; 
+                wCtx.textAlign = 'center'; 
+                wCtx.textBaseline = 'middle'; 
+                wCtx.fillStyle = '#22c55e'; 
+                wCtx.shadowBlur = 30; 
+                wCtx.shadowColor = '#22c55e'; 
+                wCtx.fillText(`WON ${formatMoney(wheelWinAmt)}!`, 400, 400);
             }
         }
 
@@ -510,7 +537,6 @@
         wheelCollectBtn.addEventListener('click', () => { initAudio(); bonusModal.style.display = 'none'; wheelWinAmt = 0; gameState = 'IDLE'; if (isAutoSpin) { setTimeout(() => { if (gameState === 'IDLE') spinLogic(); }, 1000); } });
 
         updateUI(); 
-        // Initial drawing is handled by initAssets() once they load
         requestAnimationFrame(gameLoop);
     </script>
 </body>
