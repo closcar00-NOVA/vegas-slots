@@ -455,11 +455,14 @@
                     // CHANGED: Shrunk from 120px to 85px so they fit between the spokes
                     wCtx.drawImage(textImg, -42.5, -42.5, 85, 85); 
                 }
-                wCtx.restore();
-            }
-            // 3. Draw Static Center Hub over the spinning face
-            if (hubImg && hubImg.complete) {
-                wCtx.drawImage(hubImg, 260, 260, 280, 280); 
+                wCtx.restore(); // Restores the individual text rotation
+        }
+        
+        wCtx.restore(); // <--- THIS IS THE MISSING LINE! (Resets the main wheel rotation)
+
+        // 3. Draw Static Center Hub over the spinning face
+        if (hubImg && hubImg.complete) {
+            wCtx.drawImage(hubImg, 260, 260, 280, 280);
             }
 
             // 4. Draw Static Red Pointer Hovering at 12 o'clock
