@@ -445,18 +445,18 @@
                 wCtx.save();
                 // Rotate to the absolute center of this specific wedge
                 wCtx.rotate(i * ARC + ARC/2);
-                wCtx.translate(220, 0); // Push it outward toward the rim
+                
+                wCtx.translate(260, 0); // CHANGED: Pushed further out toward the rim
                 wCtx.rotate(Math.PI/2); // Turn text upright
 
                 let mult = WHEEL_SEGMENTS[i];
                 let textImg = loadedAssets[`TEXT_${mult}X`];
                 if (textImg && textImg.complete) {
-                    wCtx.drawImage(textImg, -60, -60, 120, 120); // Scale the text asset to fit
+                    // CHANGED: Shrunk from 120px to 85px so they fit between the spokes
+                    wCtx.drawImage(textImg, -42.5, -42.5, 85, 85); 
                 }
                 wCtx.restore();
             }
-            wCtx.restore(); // Reset translation/rotation for the static pieces
-
             // 3. Draw Static Center Hub over the spinning face
             if (hubImg && hubImg.complete) {
                 wCtx.drawImage(hubImg, 260, 260, 280, 280); 
