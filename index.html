@@ -18,7 +18,7 @@
             --border-dim: rgba(255, 255, 255, 0.1);
         }
         
-        /* PHASE 3 ASSET: Environmental Background */
+        /* Environmental Background */
         body { 
             margin: 0; padding: 20px; 
             background: #000 url('env_background.png') no-repeat center center fixed; 
@@ -50,7 +50,7 @@
         }
         .btn-connect:hover { box-shadow: 0 0 15px rgba(6, 182, 212, 0.3), inset 0 0 10px rgba(6, 182, 212, 0.2); background: rgba(6, 182, 212, 0.1); color: #fff; }
 
-        /* API KEY & SOUND TOGGLE (Poker UI Baseline) */
+        /* API KEY & SOUND TOGGLE */
         #sound-toggle {
             position: fixed; top: 20px; right: 20px; z-index: 1000;
             background: rgba(0,0,0,0.6); border: 1px solid var(--border-dim); border-radius: 4px;
@@ -97,7 +97,7 @@
         /* Main Screen Area */
         .screen-bezel { padding: 15px; background: rgba(15, 23, 42, 0.85); border-left: 2px solid #334155; border-right: 2px solid #334155; backdrop-filter: blur(10px); }
         
-        /* PHASE 3 ASSET: Reel Backing Texture */
+        /* Reel Backing Texture */
         .canvas-wrapper { 
             flex-grow: 1; min-height: 0; width: 100%; aspect-ratio: 5 / 3; 
             background: #020617 url('env_reel_backing.png') repeat center center; 
@@ -235,7 +235,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // --- API Key Management (Vegas Pro Casino Shared Key) ---
+        // --- API Key Management ---
         const vegasApiKeyInput = document.getElementById('vegas-api-key');
         const savedApiKey = localStorage.getItem('vegas_pro_api_key');
         if (savedApiKey) {
@@ -269,7 +269,7 @@
 
         // --- Game State & Cloud Sync ---
         let balance = 0; 
-        let aiBankrolls = {}; // Passed along in saves so we don't accidentally overwrite the Poker AI
+        let aiBankrolls = {}; 
         let isLoggedIn = false;
         
         let baseBet = 100;
@@ -350,9 +350,9 @@
         const bonusModal = document.getElementById('bonus-modal');
         const wheelSpinBtn = document.getElementById('wheelSpinBtn'); const wheelCollectBtn = document.getElementById('wheelCollectBtn');
 
-        // --- ASSET PRELOADER ---
+        // --- ASSET PRELOADER (Updated: Sprites Removed) ---
         const loadedAssets = {};
-        let assetsToLoad = 20;
+        let assetsToLoad = 14; 
         let assetsLoadedCount = 0;
 
         const assetMap = {
@@ -362,12 +362,6 @@
             [SYMBOLS.DIAMOND]: 'symbol_diamond.png',
             [SYMBOLS.WILD]: 'symbol_wild.png',
             [SYMBOLS.BONUS]: 'symbol_bonus.png',
-            'X_ANIM': 'x_win_anim.png',
-            'WATCH_ANIM': 'watch_win_anim.png',
-            'VAULT_ANIM': 'vault_win_anim.png',
-            'DIAMOND_ANIM': 'diamond_win_anim.png',
-            'WILD_ANIM': 'wild_win_anim.png',
-            'BONUS_ANIM': 'bonus_win_anim.png',
             'WHEEL_FACE': 'wheel_face.png',
             'WHEEL_HUB': 'wheel_hub.png',
             'WHEEL_POINTER': 'wheel_pointer.png',
@@ -393,7 +387,7 @@
                 img.onload = () => {
                     assetsLoadedCount++;
                     if (assetsLoadedCount === assetsToLoad) {
-                        drawSlotCanvas(); // Render initial background behind login overlay
+                        drawSlotCanvas(); 
                         checkReady();
                     }
                 };
@@ -408,7 +402,7 @@
             balanceDisplay.innerText = formatMoney(balance);
             betDisplay.innerText = formatMoney(baseBet * activeMultiplier);
             progDisplay.innerText = formatMoney(fakeProgressive) + '.00';
-            saveGameStateToCloud(); // Auto syncs to Firestore on every update
+            saveGameStateToCloud(); 
         }
 
         // --- Web Audio Context ---
@@ -437,30 +431,11 @@
         function formatMoney(num) { return '$' + Math.floor(num).toLocaleString(); }
         function getRandomSymbol() { let r = Math.random() * 100; for (let i = 0; i < WEIGHTS.length; i++) { if (r < WEIGHTS[i]) return i; r -= WEIGHTS[i]; } return 0; }
 
-        let globalFrameCount = 0;
-        setInterval(() => { globalFrameCount++; }, 100);
-
-        const ANIM_MAP = {
-            [SYMBOLS.X]: 'X_ANIM', [SYMBOLS.WATCH]: 'WATCH_ANIM', [SYMBOLS.VAULT]: 'VAULT_ANIM',
-            [SYMBOLS.DIAMOND]: 'DIAMOND_ANIM', [SYMBOLS.WILD]: 'WILD_ANIM', [SYMBOLS.BONUS]: 'BONUS_ANIM'
-        };
-
-        function drawSymbol(ctx, sym, x, y, size, isSpinning, isWinningSymbol = false) {
+        // --- STATIC RENDERER ---
+        function drawSymbol(ctx, sym, x, y, size, isSpinning) {
             ctx.save(); 
             ctx.translate(x, y); 
             
-            if (isWinningSymbol && gameState === 'IDLE') {
-                const animKey = ANIM_MAP[sym];
-                const animImg = loadedAssets[animKey];
-                
-                if (animImg && animImg.complete) {
-                    let currentFrame = globalFrameCount % 5; 
-                    ctx.drawImage(animImg, currentFrame * 200, 0, 200, 200, -size/2, -size/2, size, size);
-                    ctx.restore();
-                    return;
-                }
-            }
-
             const img = loadedAssets[sym];
             if (img && img.complete) {
                 if (isSpinning) { 
@@ -549,16 +524,8 @@
                     let rowIndex = i - 1; 
                     let y = rowIndex * 200 + reel.yOffset; 
                     
-                    let isWinningSymbol = false;
-                    if (gameState === 'IDLE' && winningLines.length > 0) {
-                        winningLines.forEach(win => {
-                            if (colIndex < win.matchCount && win.line[colIndex] === rowIndex) {
-                                isWinningSymbol = true;
-                            }
-                        });
-                    }
-
-                    drawSymbol(ctx, sym, colIndex * 200 + 100, y + 100, 160, reel.isSpinning, isWinningSymbol); 
+                    // Static drawing call for all symbols
+                    drawSymbol(ctx, sym, colIndex * 200 + 100, y + 100, 160, reel.isSpinning); 
                 }
                 ctx.restore();
             });
@@ -590,7 +557,7 @@
             const hubImg = loadedAssets['WHEEL_HUB'];
             const pointerImg = loadedAssets['WHEEL_POINTER'];
 
-            if (!faceImg || !faceImg.complete) return;
+            if (!faceImg || !faceImg.complete) return; 
 
             wCtx.save();
             wCtx.translate(400, 400);
@@ -610,7 +577,7 @@
                 }
                 wCtx.restore();
             }
-            wCtx.restore();
+            wCtx.restore(); 
 
             if (hubImg && hubImg.complete) {
                 wCtx.drawImage(hubImg, 260, 260, 280, 280); 
