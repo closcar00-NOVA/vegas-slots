@@ -6,7 +6,17 @@
     <title>WHEEL OF SIN - Peak65 Hybrid Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --accent-cyan: #06b6d4; --accent-magenta: #ff00ff; --accent-gold: #fbbf24; --accent-green: #22c55e; }
+        :root { 
+            --accent-cyan: #06b6d4; 
+            --accent-magenta: #ff00ff; 
+            --accent-gold: #fbbf24; 
+            --accent-green: #22c55e;
+            
+            /* Bridging Poker Variables */
+            --neon-gold: #fbbf24; 
+            --neon-cyan: #06b6d4;
+            --border-dim: rgba(255, 255, 255, 0.1);
+        }
         
         /* PHASE 3 ASSET: Environmental Background */
         body { 
@@ -16,25 +26,58 @@
             color: white; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; user-select: none; 
         }
 
-        /* API KEY INPUT UI */
+        /* CLOUD LOGIN OVERLAY */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000; backdrop-filter: blur(10px);
+        }
+        .login-box {
+            background: rgba(15, 23, 42, 0.9); border: 1px solid var(--accent-cyan); border-radius: 8px; 
+            padding: 50px 80px; text-align: center; box-shadow: 0 0 40px rgba(6, 182, 212, 0.1); width: 100%; max-width: 500px;
+        }
+        .login-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: #94a3b8; letter-spacing: 6px; margin-bottom: 30px; text-transform: uppercase; }
+        .login-input {
+            background: #000; border: 1px solid rgba(255, 255, 255, 0.1); color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif; font-size: 1.5rem; padding: 15px; text-align: center;
+            border-radius: 6px; margin-bottom: 30px; width: 100%; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .login-input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(6, 182, 212, 0.2); }
+        .btn-connect { 
+            border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 15px; width: 100%; font-size: 1.2rem;
+            background: transparent; font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer; border-radius: 6px; transition: 0.2s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-connect:hover { box-shadow: 0 0 15px rgba(6, 182, 212, 0.3), inset 0 0 10px rgba(6, 182, 212, 0.2); background: rgba(6, 182, 212, 0.1); color: #fff; }
+
+        /* API KEY & SOUND TOGGLE (Poker UI Baseline) */
+        #sound-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: rgba(0,0,0,0.6); border: 1px solid var(--border-dim); border-radius: 4px;
+            padding: 6px 12px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 2px;
+            color: var(--neon-cyan); cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;
+        }
+        #sound-toggle:hover { border-color: var(--neon-cyan); }
+        #sound-toggle.muted { color: #64748b; border-color: var(--border-dim); }
+
         #api-key-container {
-            position: absolute; top: 20px; right: 20px; z-index: 1000;
+            position: fixed; top: 65px; right: 20px; z-index: 1000;
         }
         #vegas-api-key {
-            background-color: rgba(10, 10, 12, 0.9); border: 1px solid var(--accent-cyan); border-radius: 4px; padding: 6px 12px; color: white; font-family: 'Orbitron', sans-serif; font-size: 12px; outline: none; transition: box-shadow 0.2s;
+            background-color: rgba(10, 10, 12, 0.9); border: 1px solid var(--neon-gold); border-radius: 4px; padding: 6px 12px; color: white; font-family: 'Orbitron', sans-serif; font-size: 12px; outline: none; transition: box-shadow 0.2s;
             width: 180px; text-align: center;
         }
         #vegas-api-key:focus {
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
-        /* The Physical Cabinet Architecture (Now Responsive) */
+        /* The Physical Cabinet Architecture */
         .cabinet-wrapper { 
             position: relative; display: flex; flex-direction: column; width: 100%; max-width: 900px; 
             background: #000; border-radius: 24px 24px 12px 12px; 
             box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.05); 
             z-index: 10; margin-top: 20px; 
-            max-height: 95vh; overflow: hidden; /* Fixes cut-off by forcing interior to shrink */
+            max-height: 95vh; overflow: hidden;
         }
         
         /* Animated LED Light Pillars */
@@ -56,7 +99,7 @@
         
         /* PHASE 3 ASSET: Reel Backing Texture */
         .canvas-wrapper { 
-            flex-grow: 1; min-height: 0; width: 100%; aspect-ratio: 5 / 3; /* Responsive flex constraints */
+            flex-grow: 1; min-height: 0; width: 100%; aspect-ratio: 5 / 3; 
             background: #020617 url('env_reel_backing.png') repeat center center; 
             background-size: cover;
             border: 4px solid rgba(6, 182, 212, 0.3); border-radius: 12px; 
@@ -71,8 +114,6 @@
         #controls { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, #1e293b, #000); padding: 25px 30px; border-radius: 0 0 12px 12px; border-top: 2px solid #475569; position: relative; z-index: 2; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); }
         .stat-box { display: flex; flex-direction: column; align-items: center; background: #020617; padding: 12px 24px; border-radius: 8px; border: 1px solid #334155; min-width: 160px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.8); }
         .stat-label { font-size: 0.8rem; color: #64748b; margin-bottom: 5px; letter-spacing: 2px; }
-        
-        /* Fixed width prevents UI jumping when numbers change */
         .stat-value { min-width: 120px; text-align: center; font-size: 1.6rem; font-weight: 700; color: var(--accent-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
         
         .bet-controls { display: flex; align-items: center; gap: 12px; }
@@ -86,7 +127,6 @@
         #spinBtn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 5px rgba(20, 83, 45, 0.8); }
         #spinBtn:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        /* Fixed width prevents UI jumping on toggle */
         .sys-btn { min-width: 160px; text-align: center; background: #0f172a; border: 2px solid #334155; color: #94a3b8; padding: 8px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .sys-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
         .sys-btn.active { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px var(--accent-cyan); border-color: var(--accent-cyan); }
@@ -120,10 +160,23 @@
 </head>
 <body>
 
+    <!-- CLOUD LOGIN OVERLAY -->
+    <div id="login-screen">
+        <div class="login-box">
+            <div class="login-title">CLOUD SYNC LOGIN</div>
+            <input type="text" id="player-id-input" class="login-input" placeholder="ENTER PLAYER ID" autocomplete="off">
+            <button id="btn-login" class="btn-connect">CONNECT TO CLOUD</button>
+            <div id="login-status" style="margin-top: 15px; color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem;"></div>
+        </div>
+    </div>
+
+    <!-- API KEY & SOUND CONTROL -->
+    <button id="sound-toggle">SOUND: ON</button>
     <div id="api-key-container">
         <input type="password" id="vegas-api-key" placeholder="Gemini API Key" autocomplete="off">
     </div>
 
+    <!-- MAIN CABINET -->
     <div class="cabinet-wrapper">
         <div class="led-pillar led-left"></div>
         <div class="led-pillar led-right"></div>
@@ -165,6 +218,7 @@
         </div>
     </div>
 
+    <!-- BONUS MODAL -->
     <div id="bonus-modal">
         <div class="modal-title">BONUS TRIGGERED!</div>
         <div class="wheel-container">
@@ -176,21 +230,96 @@
         </div>
     </div>
 
-    <script>
+    <!-- FIREBASE MODULE & GAME ENGINE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         // --- API Key Management (Vegas Pro Casino Shared Key) ---
         const vegasApiKeyInput = document.getElementById('vegas-api-key');
-
         const savedApiKey = localStorage.getItem('vegas_pro_api_key');
         if (savedApiKey) {
             vegasApiKeyInput.value = savedApiKey;
         }
-
         vegasApiKeyInput.addEventListener('change', (e) => {
             localStorage.setItem('vegas_pro_api_key', e.target.value.trim());
         });
 
+        // --- SOUND CONTROLS ---
+        let soundEnabled = true;
+        document.getElementById('sound-toggle').addEventListener('click', (e) => {
+            soundEnabled = !soundEnabled;
+            e.target.innerText = soundEnabled ? "SOUND: ON" : "SOUND: OFF";
+            if(soundEnabled) { e.target.classList.remove('muted'); } else { e.target.classList.add('muted'); }
+        });
+
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSWZMLtsbybfGo0ZUaH7UhLVHcokgkhcA",
+            authDomain: "vegas-pro-6256c.firebaseapp.com",
+            projectId: "vegas-pro-6256c",
+            storageBucket: "vegas-pro-6256c.firebasestorage.app",
+            messagingSenderId: "943834106696",
+            appId: "1:943834106696:web:24169c1adf1d83a815017d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let cloudDocRef = null;
+
+        // --- Game State & Cloud Sync ---
+        let balance = 0; 
+        let aiBankrolls = {}; // Passed along in saves so we don't accidentally overwrite the Poker AI
+        let isLoggedIn = false;
+        
+        let baseBet = 100;
+        let activeMultiplier = 1;
+        let fakeProgressive = 42500.00;
+        let gameState = 'IDLE'; 
+        let winningLines = [];
+        let totalWin = 0;
+        let bonusCount = 0;
+        let isAutoSpin = false;
+
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const playerId = document.getElementById('player-id-input').value.trim().toUpperCase();
+            if (!playerId) return;
+
+            document.getElementById('login-status').innerText = "SYNCING WITH CLOUD...";
+            cloudDocRef = doc(db, "saves", playerId);
+            
+            try {
+                const docSnap = await getDoc(cloudDocRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    balance = data.bankroll !== undefined ? data.bankroll : 1000000;
+                    aiBankrolls = data.aiBankrolls || {};
+                } else {
+                    balance = 3256000; // Starting Bankroll
+                    aiBankrolls = { 'PRO': 1500000, 'HUSTLER': 1500000, 'GAMBIT': 1500000, 'WILD': 1500000, 'SHARK': 1500000, 'ROCK': 1500000 };
+                    await setDoc(cloudDocRef, { bankroll: balance, aiBankrolls });
+                }
+
+                document.getElementById('login-screen').style.display = 'none';
+                isLoggedIn = true;
+                updateUI();
+                checkReady();
+            } catch (error) {
+                console.error(error);
+                document.getElementById('login-status').innerText = "ERROR CONNECTING TO DATABASE";
+                document.getElementById('login-status').style.color = "var(--accent-magenta)";
+            }
+        });
+
+        async function saveGameStateToCloud() {
+            if (!cloudDocRef || !isLoggedIn) return;
+            try { await setDoc(cloudDocRef, { bankroll: balance, aiBankrolls }, { merge: true }); } 
+            catch (e) { console.error("Cloud Save Failed:", e); }
+        }
+
+        // --- SLOTS ENGINE CONSTANTS ---
         const SYMBOLS = { X: 0, WATCH: 1, VAULT: 2, DIAMOND: 3, WILD: 4, BONUS: 5 };
-        const WEIGHTS = [40, 25, 15, 10, 5, 5]; // Balanced for regular play (set BONUS to 200 for fast wheel testing)
+        const WEIGHTS = [40, 25, 15, 10, 5, 5]; 
 
         const PAYLINES = [
             [1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2],
@@ -221,27 +350,24 @@
         const bonusModal = document.getElementById('bonus-modal');
         const wheelSpinBtn = document.getElementById('wheelSpinBtn'); const wheelCollectBtn = document.getElementById('wheelCollectBtn');
 
-        // --- THE FULL 20-ASSET PRELOADER ---
+        // --- ASSET PRELOADER ---
         const loadedAssets = {};
         let assetsToLoad = 20;
         let assetsLoadedCount = 0;
 
         const assetMap = {
-            // Base Symbols
             [SYMBOLS.X]: 'symbol_x.png',
             [SYMBOLS.WATCH]: 'symbol_watch.png',
             [SYMBOLS.VAULT]: 'symbol_vault.png',
             [SYMBOLS.DIAMOND]: 'symbol_diamond.png',
             [SYMBOLS.WILD]: 'symbol_wild.png',
             [SYMBOLS.BONUS]: 'symbol_bonus.png',
-            // Animated Sprites
             'X_ANIM': 'x_win_anim.png',
             'WATCH_ANIM': 'watch_win_anim.png',
             'VAULT_ANIM': 'vault_win_anim.png',
             'DIAMOND_ANIM': 'diamond_win_anim.png',
             'WILD_ANIM': 'wild_win_anim.png',
             'BONUS_ANIM': 'bonus_win_anim.png',
-            // Wheel Assets
             'WHEEL_FACE': 'wheel_face.png',
             'WHEEL_HUB': 'wheel_hub.png',
             'WHEEL_POINTER': 'wheel_pointer.png',
@@ -252,15 +378,23 @@
             'TEXT_100X': 'text_100x.png'
         };
 
+        function checkReady() {
+            if (assetsLoadedCount === assetsToLoad && isLoggedIn) {
+                spinBtn.innerText = "SPIN";
+                spinBtn.disabled = false;
+            } else if (assetsLoadedCount === assetsToLoad) {
+                spinBtn.innerText = "LOGIN REQUIRED";
+            }
+        }
+
         function initAssets() {
             for (let key in assetMap) {
                 const img = new Image();
                 img.onload = () => {
                     assetsLoadedCount++;
                     if (assetsLoadedCount === assetsToLoad) {
-                        spinBtn.innerText = "SPIN";
-                        spinBtn.disabled = false;
-                        drawSlotCanvas(); // Render initial frame once images are ready
+                        drawSlotCanvas(); // Render initial background behind login overlay
+                        checkReady();
                     }
                 };
                 img.onerror = () => console.error("Failed to load: " + assetMap[key]);
@@ -270,30 +404,11 @@
         }
         initAssets();
 
-        // --- Game State & Economy ---
-        let balance = parseInt(localStorage.getItem('vegas_pro_master_bankroll')) || 1000000;
-        let baseBet = 100;
-        let activeMultiplier = 1;
-        let fakeProgressive = 42500.00;
-        let gameState = 'IDLE'; 
-        let winningLines = [];
-        let totalWin = 0;
-        let bonusCount = 0;
-        let isAutoSpin = false;
-
-        // Master Ledger Live Sync
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'vegas_pro_master_bankroll') {
-                balance = parseInt(event.newValue);
-                balanceDisplay.innerText = formatMoney(balance); 
-            }
-        });
-
         function updateUI() {
             balanceDisplay.innerText = formatMoney(balance);
             betDisplay.innerText = formatMoney(baseBet * activeMultiplier);
             progDisplay.innerText = formatMoney(fakeProgressive) + '.00';
-            localStorage.setItem('vegas_pro_master_bankroll', balance);
+            saveGameStateToCloud(); // Auto syncs to Firestore on every update
         }
 
         // --- Web Audio Context ---
@@ -304,7 +419,7 @@
         }
 
         function playSound(type) {
-            if (!audioCtx) return;
+            if (!soundEnabled || !audioCtx) return;
             const t = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(masterGain);
 
@@ -322,39 +437,30 @@
         function formatMoney(num) { return '$' + Math.floor(num).toLocaleString(); }
         function getRandomSymbol() { let r = Math.random() * 100; for (let i = 0; i < WEIGHTS.length; i++) { if (r < WEIGHTS[i]) return i; r -= WEIGHTS[i]; } return 0; }
 
-        // Global animation timer
         let globalFrameCount = 0;
         setInterval(() => { globalFrameCount++; }, 100);
 
-        // Map integer symbols to their animation asset keys
         const ANIM_MAP = {
-            [SYMBOLS.X]: 'X_ANIM',
-            [SYMBOLS.WATCH]: 'WATCH_ANIM',
-            [SYMBOLS.VAULT]: 'VAULT_ANIM',
-            [SYMBOLS.DIAMOND]: 'DIAMOND_ANIM',
-            [SYMBOLS.WILD]: 'WILD_ANIM',
-            [SYMBOLS.BONUS]: 'BONUS_ANIM'
+            [SYMBOLS.X]: 'X_ANIM', [SYMBOLS.WATCH]: 'WATCH_ANIM', [SYMBOLS.VAULT]: 'VAULT_ANIM',
+            [SYMBOLS.DIAMOND]: 'DIAMOND_ANIM', [SYMBOLS.WILD]: 'WILD_ANIM', [SYMBOLS.BONUS]: 'BONUS_ANIM'
         };
 
-        // --- FULLY DYNAMIC SPRITE RENDERER ---
         function drawSymbol(ctx, sym, x, y, size, isSpinning, isWinningSymbol = false) {
             ctx.save(); 
             ctx.translate(x, y); 
             
-            // If the symbol is part of a win line, attempt to load its sprite sheet
             if (isWinningSymbol && gameState === 'IDLE') {
                 const animKey = ANIM_MAP[sym];
                 const animImg = loadedAssets[animKey];
                 
                 if (animImg && animImg.complete) {
-                    let currentFrame = globalFrameCount % 5; // Cycles 0 to 4
+                    let currentFrame = globalFrameCount % 5; 
                     ctx.drawImage(animImg, currentFrame * 200, 0, 200, 200, -size/2, -size/2, size, size);
                     ctx.restore();
-                    return; // Exit early so static image isn't drawn over the animation
+                    return;
                 }
             }
 
-            // Default static rendering for everything else
             const img = loadedAssets[sym];
             if (img && img.complete) {
                 if (isSpinning) { 
@@ -384,11 +490,7 @@
         }
         const reels = [new Reel(0), new Reel(1), new Reel(2), new Reel(3), new Reel(4)];
 
-        // --- Core Game Loops ---
         function spinLogic() {
-            let storedBalance = parseInt(localStorage.getItem('vegas_pro_master_bankroll'));
-            if (!isNaN(storedBalance)) balance = storedBalance;
-
             let totalBetCost = baseBet * activeMultiplier;
             if (balance < totalBetCost) { isAutoSpin = false; autoSpinBtn.innerText = 'AUTO SPIN: OFF'; autoSpinBtn.classList.remove('active'); alert("Insufficient Balance!"); return; }
             
@@ -477,7 +579,6 @@
             drawSlotCanvas(); requestAnimationFrame(gameLoop);
         }
 
-        // --- NEW IMAGE-BASED BONUS WHEEL LOGIC ---
         let wheelAngle = 0; let wheelVel = 0; let wheelState = 'WAITING'; let lastSegment = 0; let wheelWinAmt = 0;
 
         function showBonusModal() { bonusModal.style.display = 'flex'; wheelSpinBtn.style.display = 'block'; wheelCollectBtn.style.display = 'none'; wheelAngle = 0; wheelWinAmt = 0; wheelState = 'WAITING'; drawBonusWheel(); }
@@ -489,15 +590,13 @@
             const hubImg = loadedAssets['WHEEL_HUB'];
             const pointerImg = loadedAssets['WHEEL_POINTER'];
 
-            if (!faceImg || !faceImg.complete) return; // Wait until loaded
+            if (!faceImg || !faceImg.complete) return;
 
-            // 1. Draw Spinning Wheel Face
             wCtx.save();
             wCtx.translate(400, 400);
             wCtx.rotate(wheelAngle);
             wCtx.drawImage(faceImg, -400, -400, 800, 800); 
 
-            // 2. Map the Text Images to the Wedges
             for(let i = 0; i < NUM_SEGMENTS; i++) {
                 wCtx.save();
                 wCtx.rotate(i * ARC + ARC/2);
@@ -511,19 +610,16 @@
                 }
                 wCtx.restore();
             }
-            wCtx.restore(); // Resets main wheel rotation
+            wCtx.restore();
 
-            // 3. Draw Static Center Hub over the spinning face
             if (hubImg && hubImg.complete) {
                 wCtx.drawImage(hubImg, 260, 260, 280, 280); 
             }
 
-            // 4. Draw Static Red Pointer Hovering at 12 o'clock
             if (pointerImg && pointerImg.complete) {
                 wCtx.drawImage(pointerImg, 350, 0, 100, 130); 
             }
 
-            // 5. Draw the Win Overlay
             if (wheelState === 'STOPPED' && wheelWinAmt > 0) {
                 wCtx.fillStyle = 'rgba(0,0,0,0.85)'; 
                 wCtx.fillRect(0,0,800,800); 
@@ -556,24 +652,24 @@
         }
 
         // --- Interaction Listeners ---
-        canvas.addEventListener('click', () => { if (gameState === 'IDLE' && assetsLoadedCount === assetsToLoad) spinLogic(); });
-        spinBtn.addEventListener('click', () => { if (gameState === 'IDLE' && assetsLoadedCount === assetsToLoad) spinLogic(); });
+        canvas.addEventListener('click', () => { if (gameState === 'IDLE' && assetsLoadedCount === assetsToLoad && isLoggedIn) spinLogic(); });
+        spinBtn.addEventListener('click', () => { if (gameState === 'IDLE' && assetsLoadedCount === assetsToLoad && isLoggedIn) spinLogic(); });
 
         autoSpinBtn.addEventListener('click', () => {
-            if(assetsLoadedCount < assetsToLoad) return;
+            if(assetsLoadedCount < assetsToLoad || !isLoggedIn) return;
             initAudio(); isAutoSpin = !isAutoSpin; autoSpinBtn.innerText = isAutoSpin ? 'AUTO SPIN: ON' : 'AUTO SPIN: OFF';
             autoSpinBtn.classList.toggle('active', isAutoSpin); if (isAutoSpin && gameState === 'IDLE') spinLogic();
         });
 
         multBtn.addEventListener('click', () => {
-            initAudio(); if (gameState !== 'IDLE') return;
+            initAudio(); if (gameState !== 'IDLE' || !isLoggedIn) return;
             if (activeMultiplier === 1) activeMultiplier = 2; else if (activeMultiplier === 2) activeMultiplier = 5; else if (activeMultiplier === 5) activeMultiplier = 10; else activeMultiplier = 1;
             multBtn.innerText = `MULTIPLIER: ${activeMultiplier}X`; updateUI(); playSound('chip');
         });
 
         let holdTimer; let holdInterval;
         function updateBetAmount(direction) {
-            if (gameState !== 'IDLE') return;
+            if (gameState !== 'IDLE' || !isLoggedIn) return;
             initAudio();
             let step = baseBet >= 1000 ? 100 : 10;
             if (direction === 'up' && baseBet < 10000) { baseBet = Math.min(10000, baseBet + step); playSound('chip'); } 
@@ -592,7 +688,6 @@
         wheelSpinBtn.addEventListener('click', () => { if (wheelState === 'WAITING') { initAudio(); wheelState = 'SPINNING'; wheelSpinBtn.style.display = 'none'; wheelVel = Math.random() * 0.15 + 0.4; requestAnimationFrame(updateWheelLoop); } });
         wheelCollectBtn.addEventListener('click', () => { initAudio(); bonusModal.style.display = 'none'; wheelWinAmt = 0; gameState = 'IDLE'; if (isAutoSpin) { setTimeout(() => { if (gameState === 'IDLE') spinLogic(); }, 1000); } });
 
-        updateUI(); 
         requestAnimationFrame(gameLoop);
     </script>
 </body>
