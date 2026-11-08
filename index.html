@@ -71,13 +71,15 @@
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
-        /* The Physical Cabinet Architecture */
+        /* The Physical Cabinet Architecture - Width Equalization */
         .cabinet-wrapper { 
-            position: relative; display: flex; flex-direction: column; width: 100%; max-width: 900px; 
+            position: relative; display: flex; flex-direction: column; 
+            width: 100%; max-width: 900px; /* This dictates the global width */
             background: #000; border-radius: 24px 24px 12px 12px; 
             box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.05); 
             z-index: 10; margin-top: 20px; 
             max-height: 95vh; overflow: hidden;
+            align-items: center; /* Centers all children */
         }
         
         /* Animated LED Light Pillars */
@@ -87,15 +89,26 @@
         @keyframes ledFlow { 0% { background-position: 0% 0%; } 100% { background-position: 0% 200%; } }
 
         /* Cabinet Topper */
-        .topper { text-align: center; padding: 25px 20px; background: linear-gradient(180deg, #1e293b, #020617); border-bottom: 4px solid var(--accent-gold); border-radius: 24px 24px 0 0; position: relative; overflow: hidden; }
+        .topper { 
+            width: 100%; /* Forces 100% of max-width: 900px */
+            box-sizing: border-box;
+            text-align: center; padding: 15px 20px; 
+            background: linear-gradient(180deg, #1e293b, #020617); border-bottom: 4px solid var(--accent-gold); border-radius: 24px 24px 0 0; position: relative; overflow: hidden; 
+        }
         .topper::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transform: skewX(-30deg); animation: glare 5s infinite; }
         @keyframes glare { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-        .title { font-size: 2.8rem; font-weight: 900; margin: 0 0 10px 0; letter-spacing: 8px; color: #fff; text-shadow: 0 0 15px var(--accent-magenta), 0 0 30px var(--accent-cyan); }
-        .progressive-label { font-size: 1rem; color: #94a3b8; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 5px; }
-        .progressive-amount { font-size: 4.5rem; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 30px rgba(251, 191, 36, 0.6); margin: 0; line-height: 1; }
+        .title { font-size: 2.8rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: 8px; color: #fff; text-shadow: 0 0 15px var(--accent-magenta), 0 0 30px var(--accent-cyan); }
+        
+        /* Drastically reduced progressive font sizes */
+        .progressive-label { font-size: 0.8rem; color: #94a3b8; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 2px; }
+        .progressive-amount { font-size: 2.2rem; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 15px rgba(251, 191, 36, 0.6); margin: 0; line-height: 1; }
 
         /* Main Screen Area */
-        .screen-bezel { padding: 15px; background: rgba(15, 23, 42, 0.85); border-left: 2px solid #334155; border-right: 2px solid #334155; backdrop-filter: blur(10px); }
+        .screen-bezel { 
+            width: 100%; /* Forces 100% of max-width: 900px */
+            box-sizing: border-box;
+            padding: 15px; background: rgba(15, 23, 42, 0.85); border-left: 2px solid #334155; border-right: 2px solid #334155; backdrop-filter: blur(10px); 
+        }
         
         /* Reel Backing Texture */
         .canvas-wrapper { 
@@ -111,7 +124,11 @@
         #slotCanvas { width: 100%; height: 100%; display: block; cursor: pointer; }
 
         /* Control Deck */
-        #controls { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, #1e293b, #000); padding: 25px 30px; border-radius: 0 0 12px 12px; border-top: 2px solid #475569; position: relative; z-index: 2; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); }
+        #controls { 
+            width: 100%; /* Forces 100% of max-width: 900px */
+            box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, #1e293b, #000); padding: 25px 30px; border-radius: 0 0 12px 12px; border-top: 2px solid #475569; position: relative; z-index: 2; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); 
+        }
         .stat-box { display: flex; flex-direction: column; align-items: center; background: #020617; padding: 12px 24px; border-radius: 8px; border: 1px solid #334155; min-width: 160px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.8); }
         .stat-label { font-size: 0.8rem; color: #64748b; margin-bottom: 5px; letter-spacing: 2px; }
         .stat-value { min-width: 120px; text-align: center; font-size: 1.6rem; font-weight: 700; color: var(--accent-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
@@ -147,7 +164,7 @@
             .led-pillar { display: none; }
             .cabinet-wrapper { margin-top: 0; border-radius: 0; max-height: none; }
             .topper { border-radius: 0; padding: 15px; }
-            .progressive-amount { font-size: 3rem; }
+            .progressive-amount { font-size: 2rem; }
             .title { font-size: 2rem; }
             #controls { flex-direction: column; gap: 20px; padding: 20px; }
             #spin-group { width: 100%; order: -1; }
@@ -235,7 +252,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // --- API Key Management ---
+        // --- API Key Management (Vegas Pro Casino Shared Key) ---
         const vegasApiKeyInput = document.getElementById('vegas-api-key');
         const savedApiKey = localStorage.getItem('vegas_pro_api_key');
         if (savedApiKey) {
@@ -350,7 +367,7 @@
         const bonusModal = document.getElementById('bonus-modal');
         const wheelSpinBtn = document.getElementById('wheelSpinBtn'); const wheelCollectBtn = document.getElementById('wheelCollectBtn');
 
-        // --- ASSET PRELOADER (Updated: Sprites Removed) ---
+        // --- ASSET PRELOADER ---
         const loadedAssets = {};
         let assetsToLoad = 14; 
         let assetsLoadedCount = 0;
@@ -431,7 +448,6 @@
         function formatMoney(num) { return '$' + Math.floor(num).toLocaleString(); }
         function getRandomSymbol() { let r = Math.random() * 100; for (let i = 0; i < WEIGHTS.length; i++) { if (r < WEIGHTS[i]) return i; r -= WEIGHTS[i]; } return 0; }
 
-        // --- STATIC RENDERER ---
         function drawSymbol(ctx, sym, x, y, size, isSpinning) {
             ctx.save(); 
             ctx.translate(x, y); 
@@ -524,7 +540,6 @@
                     let rowIndex = i - 1; 
                     let y = rowIndex * 200 + reel.yOffset; 
                     
-                    // Static drawing call for all symbols
                     drawSymbol(ctx, sym, colIndex * 200 + 100, y + 100, 160, reel.isSpinning); 
                 }
                 ctx.restore();
