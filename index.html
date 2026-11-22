@@ -253,6 +253,7 @@
     <!-- FIREBASE MODULE & GAME ENGINE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // --- API Key Management ---
@@ -284,6 +285,7 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
         let cloudDocRef = null;
 
@@ -306,9 +308,14 @@
             if (!playerId) return;
 
             document.getElementById('login-status').innerText = "SYNCING WITH CLOUD...";
+            document.getElementById('login-status').style.color = "var(--accent-cyan)";
             cloudDocRef = doc(db, "saves", playerId);
             
             try {
+                if (!auth.currentUser) {
+                    await signInAnonymously(auth);
+                }
+
                 const docSnap = await getDoc(cloudDocRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
