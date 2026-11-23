@@ -126,6 +126,35 @@
         @keyframes winGlow { 0% { border-color: rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9); } 100% { border-color: var(--accent-gold); box-shadow: inset 0 0 80px rgba(251, 191, 36, 0.4), 0 0 40px var(--accent-gold); } }
         #slotCanvas { width: 100%; height: 100%; display: block; cursor: pointer; }
 
+        /* Dedicated Win Ticker Strip */
+        #win-banner {
+            flex-shrink: 0;
+            width: 100%;
+            height: 38px;
+            background: #020617;
+            border-top: 1px solid #1e293b;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: #64748b;
+            text-transform: uppercase;
+            transition: all 0.25s ease;
+        }
+        #win-banner.win-active {
+            font-size: clamp(1.1rem, 2.2vh, 1.45rem);
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #ffffff;
+            background: linear-gradient(90deg, #020617, rgba(251, 191, 36, 0.16), #020617);
+            border-top-color: rgba(251, 191, 36, 0.5);
+            border-bottom-color: rgba(251, 191, 36, 0.5);
+            text-shadow: 0 0 10px var(--accent-gold), 0 0 22px rgba(251, 191, 36, 0.8);
+        }
+
         /* Control Deck */
         #controls { 
             flex-shrink: 0;
@@ -214,6 +243,8 @@
                 <canvas id="slotCanvas" width="1000" height="600"></canvas>
             </div>
         </div>
+
+        <div id="win-banner">10 PAYLINES ACTIVE</div>
 
         <div id="controls">
             <div class="stat-box">
@@ -370,6 +401,7 @@
         // --- DOM Elements ---
         const canvas = document.getElementById('slotCanvas'); const ctx = canvas.getContext('2d');
         const canvasWrapper = document.getElementById('canvasWrapper');
+        const winBanner = document.getElementById('win-banner');
         const wheelCanvas = document.getElementById('wheelCanvas'); const wCtx = wheelCanvas.getContext('2d');
         const spinBtn = document.getElementById('spinBtn'); const autoSpinBtn = document.getElementById('autoSpinBtn');
         const multBtn = document.getElementById('multBtn');
@@ -497,7 +529,11 @@
             let totalBetCost = baseBet * activeMultiplier;
             if (balance < totalBetCost) { isAutoSpin = false; autoSpinBtn.innerText = 'AUTO SPIN: OFF'; autoSpinBtn.classList.remove('active'); alert("Insufficient Balance!"); return; }
             
-            initAudio(); canvasWrapper.classList.remove('win-glow');
+            initAudio(); 
+            canvasWrapper.classList.remove('win-glow');
+            winBanner.innerText = 'SPINNING...';
+            winBanner.classList.remove('win-active');
+            
             balance -= totalBetCost; 
             fakeProgressive += (totalBetCost * 0.05);
             updateUI();
@@ -528,7 +564,17 @@
 
         function handleSpinComplete() {
             spinBtn.disabled = false; multBtn.disabled = false; betPlus.disabled = false; betMinus.disabled = false;
-            if (totalWin > 0) { balance += totalWin; playSound('win'); canvasWrapper.classList.add('win-glow'); updateUI(); }
+            if (totalWin > 0) { 
+                balance += totalWin; 
+                playSound('win'); 
+                canvasWrapper.classList.add('win-glow'); 
+                winBanner.innerText = `WIN ${formatMoney(totalWin)}!`;
+                winBanner.classList.add('win-active');
+                updateUI(); 
+            } else {
+                winBanner.innerText = '10 PAYLINES ACTIVE';
+                winBanner.classList.remove('win-active');
+            }
             if (bonusCount >= 3) { gameState = 'BONUS'; setTimeout(showBonusModal, 1000); } 
             else { gameState = 'IDLE'; if (isAutoSpin) { setTimeout(() => { if (gameState === 'IDLE' && isAutoSpin) spinLogic(); }, 1200); } }
         }
@@ -563,8 +609,6 @@
                     ctx.shadowBlur = 25; ctx.shadowColor = '#fff'; ctx.strokeStyle = `rgba(255, 255, 255, ${pulse})`; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
                     ctx.beginPath(); for(let c=0; c<win.matchCount; c++) { let r = win.line[c]; let cx = c * 200 + 100; let cy = r * 200 + 100; if (c === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy); } ctx.stroke();
                 });
-                ctx.shadowBlur = 30; ctx.shadowColor = '#fbbf24'; ctx.fillStyle = '#fbbf24'; ctx.strokeStyle = '#000'; ctx.lineWidth = 5; ctx.font = '900 80px Orbitron'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                let msg = `WIN ${formatMoney(totalWin)}!`; ctx.strokeText(msg, 500, 300); ctx.fillText(msg, 500, 300);
             }
         }
 
@@ -680,7 +724,17 @@
         betMinus.addEventListener('touchstart', (e) => { e.preventDefault(); startBetChange('down'); }); betMinus.addEventListener('touchend', stopBetChange);
 
         wheelSpinBtn.addEventListener('click', () => { if (wheelState === 'WAITING') { initAudio(); wheelState = 'SPINNING'; wheelSpinBtn.style.display = 'none'; wheelVel = Math.random() * 0.15 + 0.4; requestAnimationFrame(updateWheelLoop); } });
-        wheelCollectBtn.addEventListener('click', () => { initAudio(); bonusModal.style.display = 'none'; wheelWinAmt = 0; gameState = 'IDLE'; if (isAutoSpin) { setTimeout(() => { if (gameState === 'IDLE') spinLogic(); }, 1000); } });
+        wheelCollectBtn.addEventListener('click', () => { 
+            initAudio(); 
+            bonusModal.style.display = 'none'; 
+            if (wheelWinAmt > 0) {
+                winBanner.innerText = `BONUS WIN ${formatMoney(wheelWinAmt)}!`;
+                winBanner.classList.add('win-active');
+            }
+            wheelWinAmt = 0; 
+            gameState = 'IDLE'; 
+            if (isAutoSpin) { setTimeout(() => { if (gameState === 'IDLE') spinLogic(); }, 1000); } 
+        });
 
         requestAnimationFrame(gameLoop);
     </script>
